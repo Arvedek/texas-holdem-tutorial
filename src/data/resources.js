@@ -1,0 +1,200 @@
+export const resources = [
+  {
+    id: "pokerstars-learn",
+    name: "PokerStars Learn",
+    type: "免费文章",
+    level: "入门",
+    description: "结构清晰的免费扑克学习文章，适合建立术语和基础策略框架。",
+    value: "从规则、基础概念到现金桌和锦标赛都有分层内容。",
+    url: "https://www.pokerstars.com/poker/learn/strategies/",
+    suggestedUse: "每学完一个基础阶段，找对应主题做补充阅读。",
+    tags: ["beginner", "rules", "preflop"]
+  },
+  {
+    id: "the-course",
+    name: "The Course - Ed Miller",
+    type: "书籍",
+    level: "入门",
+    description: "面向低级别现金桌的实战路线书。",
+    value: "强调少犯大错、价值下注和对手漏洞。",
+    url: "https://www.goodreads.com/book/show/25195157-the-course",
+    suggestedUse: "作为第一本系统策略书阅读。",
+    tags: ["beginner", "cash", "exploit"]
+  },
+  {
+    id: "theory-of-poker",
+    name: "The Theory of Poker - David Sklansky",
+    type: "书籍",
+    level: "初中级",
+    description: "扑克基础理论经典，覆盖期望值、诈唬、慢打和半诈唬等概念。",
+    value: "帮助理解为什么某些打法长期盈利。",
+    url: "https://www.goodreads.com/book/show/16171.The_Theory_of_Poker",
+    suggestedUse: "读完基础规则后，按主题慢读并做笔记。",
+    tags: ["theory", "math"]
+  },
+  {
+    id: "modern-poker-theory",
+    name: "Modern Poker Theory - Michael Acevedo",
+    type: "书籍",
+    level: "进阶",
+    description: "现代 GTO 思维入门到进阶材料。",
+    value: "把范围、频率、阻断牌和锦标赛策略系统化。",
+    url: "https://www.goodreads.com/book/show/44176816-modern-poker-theory",
+    suggestedUse: "有稳定翻前和翻后基础后再读。",
+    tags: ["advanced", "gto", "tournament"]
+  },
+  {
+    id: "mental-game",
+    name: "The Mental Game of Poker - Jared Tendler",
+    type: "书籍",
+    level: "全阶段",
+    description: "处理 tilt、恐惧、过度自信和学习瓶颈的心态书。",
+    value: "对长期稳定执行策略非常重要。",
+    url: "https://www.goodreads.com/book/show/11398794-the-mental-game-of-poker",
+    suggestedUse: "当你发现自己会情绪化跟注或升盲时阅读。",
+    tags: ["mental", "bankroll"]
+  },
+  {
+    id: "gtowizard",
+    name: "GTO Wizard",
+    type: "工具",
+    level: "进阶",
+    description: "主流 GTO 学习、训练和手牌分析工具。",
+    value: "适合查基准策略、做 drill、理解 solver 思路。",
+    url: "https://gtowizard.com/",
+    suggestedUse: "不要死记答案，用它校准常见局面的思考。",
+    tags: ["advanced", "gto", "tool"]
+  },
+  {
+    id: "equilab",
+    name: "Equilab",
+    type: "工具",
+    level: "初中级",
+    description: "经典 equity 和范围计算工具。",
+    value: "帮助理解手牌对范围的胜率，而不是只看单手牌。",
+    url: "https://www.pokerstrategy.com/poker-software-tools/equilab-holdem/",
+    suggestedUse: "复盘时输入 hero 手牌和对手范围估算 equity。",
+    tags: ["math", "range", "tool"]
+  },
+  {
+    id: "flopzilla",
+    name: "Flopzilla",
+    type: "工具",
+    level: "初中级",
+    description: "研究范围如何击中不同翻牌面的工具。",
+    value: "非常适合训练牌面结构和范围优势。",
+    url: "https://www.flopzilla.com/",
+    suggestedUse: "每周选 5 个常见翻牌面做范围命中练习。",
+    tags: ["board", "range", "tool"]
+  },
+  {
+    id: "pokertracker",
+    name: "PokerTracker",
+    type: "工具",
+    level: "进阶",
+    description: "手牌数据库、统计和复盘工具。",
+    value: "适合长期追踪 VPIP、PFR、3-bet 等数据漏洞。",
+    url: "https://www.pokertracker.com/",
+    suggestedUse: "MVP 阶段先学习其复盘思路，不接入真实 hand history。",
+    tags: ["review", "stats", "tool"]
+  },
+  {
+    id: "runitonce",
+    name: "Run It Once",
+    type: "训练站",
+    level: "初中级",
+    description: "专业牌手课程和社区内容平台。",
+    value: "课程层次丰富，适合围绕一个主题系统学习。",
+    url: "https://www.runitonce.com/",
+    suggestedUse: "确定主攻现金桌或锦标赛后再订阅学习。",
+    tags: ["course", "postflop"]
+  },
+  {
+    id: "upswing",
+    name: "Upswing Poker",
+    type: "训练站",
+    level: "初中级",
+    description: "策略文章和付费课程体系都较完整。",
+    value: "翻前范围、现金桌和锦标赛内容易于落地。",
+    url: "https://upswingpoker.com/",
+    suggestedUse: "先读免费文章，再决定是否买课程。",
+    tags: ["course", "preflop"]
+  },
+  {
+    id: "pokercoaching",
+    name: "PokerCoaching.com",
+    type: "训练站",
+    level: "初中级",
+    description: "大量 quiz 和课程，适合通过题目训练决策。",
+    value: "题目化学习对建立复盘习惯很友好。",
+    url: "https://pokercoaching.com/",
+    suggestedUse: "用作决策题和锦标赛学习补充。",
+    tags: ["course", "decision"]
+  },
+  {
+    id: "harrington",
+    name: "Harrington on Hold'em",
+    type: "书籍",
+    level: "初中级",
+    description: "锦标赛策略经典书。",
+    value: "适合理解 M、阶段压力和锦标赛基本框架。",
+    url: "https://www.goodreads.com/book/show/230614.Harrington_on_Hold_em",
+    suggestedUse: "主攻 MTT 时作为早期系统读物。",
+    tags: ["tournament", "book"]
+  },
+  {
+    id: "applications-nlhe",
+    name: "Applications of No-Limit Hold'em - Matthew Janda",
+    type: "书籍",
+    level: "进阶",
+    description: "复杂的 NLHE 理论和范围构建材料。",
+    value: "适合已有扎实基础后深入理解平衡策略。",
+    url: "https://www.goodreads.com/book/show/17713446-applications-of-no-limit-hold-em",
+    suggestedUse: "不要作为第一本策略书，适合专题阅读。",
+    tags: ["advanced", "gto"]
+  },
+  {
+    id: "bbzpoker",
+    name: "BBZ Poker",
+    type: "训练站",
+    level: "进阶",
+    description: "偏锦标赛和高阶策略训练内容。",
+    value: "适合对 MTT 感兴趣的进阶玩家。",
+    url: "https://bbzpoker.com/",
+    suggestedUse: "在学完基础 ICM 和短码策略后使用。",
+    tags: ["tournament", "advanced"]
+  },
+  {
+    id: "raise-your-edge",
+    name: "Raise Your Edge",
+    type: "训练站",
+    level: "进阶",
+    description: "以锦标赛课程和训练内容闻名。",
+    value: "适合系统补 MTT 漏洞。",
+    url: "https://www.raiseyouredge.com/",
+    suggestedUse: "当你开始认真打线上锦标赛时再考虑。",
+    tags: ["tournament", "course"]
+  },
+  {
+    id: "red-chip",
+    name: "Red Chip Poker",
+    type: "免费文章",
+    level: "入门",
+    description: "策略文章和播客内容，覆盖低级别常见问题。",
+    value: "适合做日常轻量阅读。",
+    url: "https://redchippoker.com/",
+    suggestedUse: "每周挑一个漏洞主题阅读。",
+    tags: ["beginner", "article"]
+  },
+  {
+    id: "bankroll-primer",
+    name: "Bankroll Management Primer",
+    type: "免费文章",
+    level: "全阶段",
+    description: "资金管理基础原则：买入数、降级、止损和波动。",
+    value: "防止技术还没成熟就被波动清空。",
+    url: "https://upswingpoker.com/poker-bankroll-management-strategy/",
+    suggestedUse: "开始固定级别练习前先读。",
+    tags: ["bankroll", "mental"]
+  }
+];

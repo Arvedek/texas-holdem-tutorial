@@ -1,3 +1,7 @@
+import { lessons } from "./data/lessons.js";
+import { drills } from "./data/drills.js";
+import { resources } from "./data/resources.js";
+
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
 const navButtons = [...document.querySelectorAll(".nav-button")];
@@ -19,7 +23,7 @@ function renderPlaceholder(route) {
       <div>
         <p class="eyebrow">MVP Module</p>
         <h2>${routeTitles[route]}</h2>
-        <p class="muted">模块骨架已加载，后续任务会填入真实学习、训练和复盘功能。</p>
+        <p class="muted">模块骨架已加载：${lessons.length} 个学习阶段，${drills.length} 道训练题，${resources.length} 个资源。</p>
       </div>
     </div>
   `;
