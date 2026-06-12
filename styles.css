@@ -420,6 +420,84 @@ h1 {
   background: rgba(15, 90, 67, 0.12);
 }
 
+.training-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 18px;
+}
+
+.filter-panel {
+  align-self: start;
+}
+
+.chip-list {
+  display: grid;
+  gap: 8px;
+}
+
+.chip-button {
+  padding: 10px 12px;
+  text-align: left;
+  color: var(--felt);
+  border: 1px solid rgba(15, 90, 67, 0.18);
+  background: rgba(15, 90, 67, 0.08);
+}
+
+.chip-button.is-active,
+.chip-button:hover {
+  color: #fff;
+  background: var(--felt);
+}
+
+.question-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.question-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.choice-button {
+  min-height: 58px;
+  padding: 14px;
+  color: var(--ink);
+  text-align: left;
+  border: 1px solid rgba(124, 115, 96, 0.26);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.choice-button:hover,
+.choice-button.is-selected {
+  border-color: var(--felt);
+  background: rgba(15, 90, 67, 0.08);
+}
+
+.answer-panel {
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 90, 67, 0.22);
+  background: rgba(15, 90, 67, 0.08);
+}
+
+.answer-panel.is-wrong {
+  border-color: rgba(182, 64, 54, 0.3);
+  background: rgba(182, 64, 54, 0.08);
+}
+
+.answer-panel p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
 @media (max-width: 860px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -462,7 +540,9 @@ h1 {
   }
 
   .lesson-card,
-  .lesson-columns {
+  .lesson-columns,
+  .training-layout,
+  .choice-grid {
     grid-template-columns: 1fr;
   }
 
