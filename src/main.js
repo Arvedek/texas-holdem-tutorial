@@ -3,6 +3,7 @@ import { drills } from "./data/drills.js";
 import { resources } from "./data/resources.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
 import { renderDashboard } from "./features/dashboard.js";
+import { renderLearning } from "./features/learning.js";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
@@ -66,6 +67,11 @@ function setRoute(route) {
 
   if (route === "dashboard") {
     renderDashboard(getContext());
+    return;
+  }
+
+  if (route === "learning") {
+    renderLearning(getContext());
     return;
   }
 

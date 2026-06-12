@@ -326,6 +326,100 @@ h1 {
   font-size: 13px;
 }
 
+.section-intro {
+  display: grid;
+  gap: 16px;
+}
+
+.progress-bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(15, 90, 67, 0.12);
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--felt), var(--gold));
+}
+
+.lesson-list {
+  display: grid;
+  gap: 14px;
+}
+
+.lesson-card {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(124, 115, 96, 0.22);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.lesson-card.is-complete {
+  border-color: rgba(15, 90, 67, 0.42);
+}
+
+.lesson-stage {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  padding: 16px;
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  background: var(--felt);
+}
+
+.lesson-body {
+  padding: 18px;
+}
+
+.lesson-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lesson-columns h4 {
+  margin: 0 0 8px;
+}
+
+.lesson-columns ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.lesson-columns li,
+.lesson-columns p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tag {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--felt);
+  font-size: 12px;
+}
+
+.tag.is-soft {
+  color: var(--felt);
+  background: rgba(15, 90, 67, 0.12);
+}
+
 @media (max-width: 860px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -365,5 +459,14 @@ h1 {
   .progress-ring {
     width: 132px;
     height: 132px;
+  }
+
+  .lesson-card,
+  .lesson-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-stage {
+    min-height: auto;
   }
 }
