@@ -19,6 +19,7 @@
       import { analyzeBoardTexture } from "./src/lib/boardTexture.js";
       import { escapeHtml } from "./src/lib/sanitize.js";
       import { normalizeState } from "./src/lib/storage.js";
+      import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -50,6 +51,13 @@
           return Array.isArray(state.handReviews[0].errorTypes)
             && state.handReviews[0].userNote === ""
             && state.handReviews[0].streetFocus === "overall";
+        }],
+        ["valid import envelope is accepted", () => {
+          const envelope = createExportEnvelope({ completedLessons: ["x"], drillAttempts: [], savedMistakes: [], handReviews: [] });
+          return validateImportEnvelope(envelope).ok;
+        }],
+        ["invalid import envelope is rejected", () => {
+          return !validateImportEnvelope({ app: "other", version: 1, state: {} }).ok;
         }]
       ];
 

@@ -121,6 +121,24 @@ button {
   margin-bottom: 24px;
 }
 
+.topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.import-preview {
+  margin-bottom: 18px;
+}
+
+.import-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .eyebrow {
   margin: 0 0 6px;
   color: var(--felt);
@@ -698,6 +716,13 @@ textarea {
 
   .topbar {
     align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .topbar-actions,
+  .import-card {
+    width: 100%;
+    align-items: stretch;
     flex-direction: column;
   }
 

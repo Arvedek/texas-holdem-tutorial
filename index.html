@@ -32,8 +32,14 @@
             <p class="eyebrow">Texas Hold'em MVP</p>
             <h1 id="page-title">仪表盘</h1>
           </div>
-          <button class="ghost-button" id="reset-progress" type="button">重置本地进度</button>
+          <div class="topbar-actions">
+            <button class="ghost-button" id="export-data" type="button">导出数据</button>
+            <button class="ghost-button" id="import-data" type="button">导入数据</button>
+            <button class="ghost-button" id="reset-progress" type="button">重置本地进度</button>
+            <input id="import-file" type="file" accept="application/json,.json" hidden>
+          </div>
         </header>
+        <section id="import-preview" class="import-preview" hidden></section>
         <section id="app" class="content" aria-live="polite"></section>
       </main>
     </div>

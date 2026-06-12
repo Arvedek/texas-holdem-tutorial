@@ -2,6 +2,8 @@ import { lessons } from "./data/lessons.js";
 import { drills } from "./data/drills.js";
 import { resources } from "./data/resources.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
+import { createExportEnvelope, createImportPreview, downloadJson, validateImportEnvelope } from "./lib/importExport.js";
+import { escapeHtml } from "./lib/sanitize.js";
 import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js";
@@ -13,6 +15,10 @@ const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
 const navButtons = [...document.querySelectorAll(".nav-button")];
 const resetButton = document.querySelector("#reset-progress");
+const exportButton = document.querySelector("#export-data");
+const importButton = document.querySelector("#import-data");
+const importFile = document.querySelector("#import-file");
+const importPreview = document.querySelector("#import-preview");
 
 const routeTitles = {
   dashboard: "仪表盘",
@@ -26,6 +32,7 @@ const routeTitles = {
 let currentRoute = "dashboard";
 let state = loadState();
 let trainingTargetQuestionId = null;
+let pendingImportState = null;
 
 function setState(updater) {
   const nextState = typeof updater === "function" ? updater(state) : updater;
@@ -118,6 +125,69 @@ navButtons.forEach((button) => {
 resetButton.addEventListener("click", () => {
   state = resetState();
   setRoute(currentRoute);
+});
+
+exportButton.addEventListener("click", () => {
+  const date = new Date().toISOString().slice(0, 10);
+  downloadJson(`poker-learning-dashboard-export-${date}.json`, createExportEnvelope(state));
+});
+
+importButton.addEventListener("click", () => importFile.click());
+
+importFile.addEventListener("change", async () => {
+  const file = importFile.files?.[0];
+  if (!file) {
+    return;
+  }
+
+  try {
+    const payload = JSON.parse(await file.text());
+    const result = validateImportEnvelope(payload);
+    if (!result.ok) {
+      pendingImportState = null;
+      importPreview.hidden = false;
+      importPreview.innerHTML = `<div class="alert"><strong>导入失败</strong><p>${escapeHtml(result.error)}</p></div>`;
+      return;
+    }
+
+    pendingImportState = result.state;
+    const preview = createImportPreview(result.state);
+    importPreview.hidden = false;
+    importPreview.innerHTML = `
+      <div class="panel import-card">
+        <div>
+          <p class="eyebrow">Import Preview</p>
+          <h3>确认导入这份学习数据？</h3>
+          <p class="muted">课程 ${preview.completedLessons} · 训练 ${preview.drillAttempts} · 错题 ${preview.savedMistakes} · 复盘 ${preview.handReviews}</p>
+        </div>
+        <div class="button-row">
+          <button class="primary-button" data-confirm-import>确认替换</button>
+          <button class="ghost-button" data-cancel-import>取消</button>
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    pendingImportState = null;
+    importPreview.hidden = false;
+    importPreview.innerHTML = `<div class="alert"><strong>导入失败</strong><p>${escapeHtml(error.message)}</p></div>`;
+  } finally {
+    importFile.value = "";
+  }
+});
+
+importPreview.addEventListener("click", (event) => {
+  if (event.target.matches("[data-confirm-import]") && pendingImportState) {
+    state = pendingImportState;
+    saveState(state);
+    pendingImportState = null;
+    importPreview.hidden = true;
+    setRoute(currentRoute);
+  }
+
+  if (event.target.matches("[data-cancel-import]")) {
+    pendingImportState = null;
+    importPreview.hidden = true;
+  }
 });
 
 setRoute(currentRoute);
