@@ -6,6 +6,7 @@ import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js";
 import { renderReview } from "./features/review.js";
+import { renderResources } from "./features/resources.js";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
@@ -84,6 +85,11 @@ function setRoute(route) {
 
   if (route === "review") {
     renderReview(getContext());
+    return;
+  }
+
+  if (route === "resources") {
+    renderResources(getContext());
     return;
   }
 
