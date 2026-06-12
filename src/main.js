@@ -5,6 +5,7 @@ import { loadState, resetState, saveState } from "./lib/storage.js";
 import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js";
+import { renderReview } from "./features/review.js";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
@@ -78,6 +79,11 @@ function setRoute(route) {
 
   if (route === "training") {
     renderTraining(getContext());
+    return;
+  }
+
+  if (route === "review") {
+    renderReview(getContext());
     return;
   }
 
