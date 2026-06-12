@@ -3,6 +3,7 @@ import { drillTypes } from "../data/drills.js";
 let selectedType = "preflop";
 let questionIndexByType = {};
 let lastAnswer = null;
+let consumedTargetQuestionId = null;
 
 function getStats(attempts) {
   const correct = attempts.filter((attempt) => attempt.correct).length;
@@ -13,7 +14,53 @@ function getStats(attempts) {
   };
 }
 
-export function renderTraining({ app, state, setState, data }) {
+function upsertMistake(savedMistakes, questionId, selectedAnswer) {
+  const now = new Date().toISOString();
+  const existing = savedMistakes.find((mistake) => mistake.questionId === questionId);
+
+  if (!existing) {
+    return [
+      ...savedMistakes,
+      {
+        questionId,
+        status: "unresolved",
+        firstMistakeAt: now,
+        lastMistakeAt: now,
+        wrongAnswers: [selectedAnswer]
+      }
+    ];
+  }
+
+  return savedMistakes.map((mistake) => {
+    if (mistake.questionId !== questionId) {
+      return mistake;
+    }
+
+    return {
+      ...mistake,
+      status: "unresolved",
+      firstMistakeAt: mistake.firstMistakeAt || now,
+      lastMistakeAt: now,
+      wrongAnswers: [...new Set([...(mistake.wrongAnswers || []), selectedAnswer])]
+    };
+  });
+}
+
+export function renderTraining({ app, state, setState, data, trainingTargetQuestionId }) {
+  if (trainingTargetQuestionId && trainingTargetQuestionId !== consumedTargetQuestionId) {
+    const target = data.drills.find((drill) => drill.id === trainingTargetQuestionId);
+    if (target) {
+      const targetQuestions = data.drills.filter((drill) => drill.type === target.type);
+      selectedType = target.type;
+      questionIndexByType = {
+        ...questionIndexByType,
+        [target.type]: Math.max(0, targetQuestions.findIndex((drill) => drill.id === trainingTargetQuestionId))
+      };
+      lastAnswer = null;
+    }
+    consumedTargetQuestionId = trainingTargetQuestionId;
+  }
+
   const questions = data.drills.filter((drill) => drill.type === selectedType);
   const index = questionIndexByType[selectedType] || 0;
   const question = questions[index % questions.length];
@@ -103,7 +150,7 @@ export function renderTraining({ app, state, setState, data }) {
             timestamp: new Date().toISOString()
           }
         ],
-        savedMistakes: correct ? current.savedMistakes : [...current.savedMistakes, question.id]
+        savedMistakes: correct ? current.savedMistakes : upsertMistake(current.savedMistakes, question.id, selected)
       }));
     });
   });

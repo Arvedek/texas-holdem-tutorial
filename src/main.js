@@ -23,6 +23,7 @@ const routeTitles = {
 
 let currentRoute = "dashboard";
 let state = loadState();
+let trainingTargetQuestionId = null;
 
 function setState(updater) {
   const nextState = typeof updater === "function" ? updater(state) : updater;
@@ -52,6 +53,8 @@ function getContext() {
     app,
     state,
     setState,
+    trainingTargetQuestionId,
+    openTrainingQuestion,
     data: {
       lessons,
       drills,
@@ -59,6 +62,11 @@ function getContext() {
     },
     navigate: setRoute
   };
+}
+
+function openTrainingQuestion(questionId) {
+  trainingTargetQuestionId = questionId;
+  setRoute("training");
 }
 
 function setRoute(route) {
