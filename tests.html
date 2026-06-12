@@ -17,6 +17,8 @@
       import { parseCard, parseCards, hasDuplicateCards } from "./src/lib/cards.js";
       import { calculatePotOdds, calculateSpr, estimateDrawEquity } from "./src/lib/pokerMath.js";
       import { analyzeBoardTexture } from "./src/lib/boardTexture.js";
+      import { escapeHtml } from "./src/lib/sanitize.js";
+      import { normalizeState } from "./src/lib/storage.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -35,6 +37,19 @@
         ["As Ts 7s is monotone", () => {
           const parsed = parseCards("As Ts 7s");
           return analyzeBoardTexture(parsed.cards).suitState === "monotone";
+        }],
+        ["escapeHtml protects tags", () => escapeHtml("<script>") === "&lt;script&gt;"],
+        ["legacy savedMistakes ids migrate to unresolved records", () => {
+          const state = normalizeState({ savedMistakes: ["dc-002"] });
+          return state.savedMistakes.length === 1
+            && state.savedMistakes[0].questionId === "dc-002"
+            && state.savedMistakes[0].status === "unresolved";
+        }],
+        ["legacy hand reviews receive new defaults", () => {
+          const state = normalizeState({ handReviews: [{ id: "r1", heroHand: "As Ks" }] });
+          return Array.isArray(state.handReviews[0].errorTypes)
+            && state.handReviews[0].userNote === ""
+            && state.handReviews[0].streetFocus === "overall";
         }]
       ];
 
