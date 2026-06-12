@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>扑克计算测试</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="main-panel">
+      <p class="eyebrow">Browser Test Runner</p>
+      <h1>扑克计算测试</h1>
+      <section id="results" class="content"></section>
+    </main>
+    <script type="module">
+      import { parseCard, parseCards, hasDuplicateCards } from "./src/lib/cards.js";
+      import { calculatePotOdds, calculateSpr, estimateDrawEquity } from "./src/lib/pokerMath.js";
+      import { analyzeBoardTexture } from "./src/lib/boardTexture.js";
+
+      const tests = [
+        ["parseCard('As') succeeds", () => parseCard("As").ok],
+        ["parseCard('1x') fails", () => !parseCard("1x").ok],
+        ["duplicate detection catches As As", () => {
+          const parsed = parseCards("As As");
+          return hasDuplicateCards(parsed.cards);
+        }],
+        ["pot odds call 50 into 100 equals 0.25", () => calculatePotOdds(50, 100) === 0.25],
+        ["SPR stack 300 pot 100 equals 3", () => calculateSpr(300, 100) === 3],
+        ["9 outs with two cards to come equals 0.36", () => estimateDrawEquity(9, 2) === 0.36],
+        ["As Ah 7d is paired", () => {
+          const parsed = parseCards("As Ah 7d");
+          return analyzeBoardTexture(parsed.cards).paired === "paired";
+        }],
+        ["As Ts 7s is monotone", () => {
+          const parsed = parseCards("As Ts 7s");
+          return analyzeBoardTexture(parsed.cards).suitState === "monotone";
+        }]
+      ];
+
+      const results = document.querySelector("#results");
+      const rows = tests.map(([name, run]) => {
+        let passed = false;
+        let detail = "";
+        try {
+          passed = Boolean(run());
+        } catch (error) {
+          detail = error.message;
+        }
+        return `
+          <div class="card">
+            <strong>${passed ? "PASS" : "FAIL"} · ${name}</strong>
+            ${detail ? `<p class="muted">${detail}</p>` : ""}
+          </div>
+        `;
+      });
+
+      results.innerHTML = rows.join("");
+    </script>
+  </body>
+</html>
