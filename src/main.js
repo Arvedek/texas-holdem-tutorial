@@ -5,6 +5,7 @@ import { loadState, resetState, saveState } from "./lib/storage.js";
 import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js";
+import { renderMistakes } from "./features/mistakes.js";
 import { renderReview } from "./features/review.js";
 import { renderResources } from "./features/resources.js";
 
@@ -17,6 +18,7 @@ const routeTitles = {
   dashboard: "仪表盘",
   learning: "学习路径",
   training: "训练中心",
+  mistakes: "错题本",
   review: "手牌复盘",
   resources: "资源库"
 };
@@ -88,6 +90,11 @@ function setRoute(route) {
 
   if (route === "training") {
     renderTraining(getContext());
+    return;
+  }
+
+  if (route === "mistakes") {
+    renderMistakes(getContext());
     return;
   }
 
