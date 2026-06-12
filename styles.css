@@ -213,6 +213,119 @@ h1 {
   text-align: center;
 }
 
+.dashboard-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.hero-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 22px;
+  align-items: center;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(15, 90, 67, 0.96), rgba(18, 59, 49, 0.96)),
+    var(--felt);
+}
+
+.hero-panel .eyebrow,
+.hero-panel .muted {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero-panel p {
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.button-row,
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.button-row {
+  margin-top: 18px;
+}
+
+.section-heading {
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-heading h3 {
+  margin-bottom: 0;
+}
+
+.progress-ring {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(#f4c95d var(--progress, 0%), rgba(255, 255, 255, 0.18) 0);
+  box-shadow: inset 0 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.progress-ring strong {
+  font-size: 34px;
+}
+
+.progress-ring span {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.compact-list {
+  display: grid;
+  gap: 10px;
+}
+
+.compact-item {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.compact-item span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.quick-action {
+  display: grid;
+  gap: 6px;
+  padding: 15px;
+  text-align: left;
+  color: var(--ink);
+  border: 1px solid rgba(15, 90, 67, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.quick-action:hover {
+  border-color: rgba(15, 90, 67, 0.45);
+  background: #fff;
+}
+
+.quick-action span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 @media (max-width: 860px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -243,7 +356,14 @@ h1 {
   }
 
   .grid.two,
-  .grid.three {
+  .grid.three,
+  .hero-panel,
+  .quick-actions {
     grid-template-columns: 1fr;
+  }
+
+  .progress-ring {
+    width: 132px;
+    height: 132px;
   }
 }

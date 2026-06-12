@@ -2,6 +2,7 @@ import { lessons } from "./data/lessons.js";
 import { drills } from "./data/drills.js";
 import { resources } from "./data/resources.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
+import { renderDashboard } from "./features/dashboard.js";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
@@ -62,7 +63,12 @@ function setRoute(route) {
   navButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.route === route);
   });
-  getContext();
+
+  if (route === "dashboard") {
+    renderDashboard(getContext());
+    return;
+  }
+
   renderPlaceholder(route);
 }
 
