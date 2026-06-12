@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>德州扑克学习驾驶舱</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand">
+          <span class="brand-mark">♠</span>
+          <div>
+            <strong>扑克驾驶舱</strong>
+            <span>学习 / 训练 / 复盘</span>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-button is-active" data-route="dashboard">仪表盘</button>
+          <button class="nav-button" data-route="learning">学习路径</button>
+          <button class="nav-button" data-route="training">训练中心</button>
+          <button class="nav-button" data-route="review">手牌复盘</button>
+          <button class="nav-button" data-route="resources">资源库</button>
+        </nav>
+      </aside>
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Texas Hold'em MVP</p>
+            <h1 id="page-title">仪表盘</h1>
+          </div>
+          <button class="ghost-button" id="reset-progress" type="button">重置本地进度</button>
+        </header>
+        <section id="app" class="content" aria-live="polite"></section>
+      </main>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
