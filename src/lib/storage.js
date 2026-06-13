@@ -4,7 +4,12 @@ export const DEFAULT_STATE = {
   completedLessons: [],
   drillAttempts: [],
   handReviews: [],
-  savedMistakes: []
+  savedMistakes: [],
+  beginnerMode: true,
+  xp: 0,
+  xpEvents: [],
+  badges: [],
+  dailyActivity: {}
 };
 
 function cloneDefaultState() {
@@ -82,7 +87,12 @@ export function normalizeState(parsed) {
     completedLessons: Array.isArray(source.completedLessons) ? source.completedLessons : fallback.completedLessons,
     drillAttempts: Array.isArray(source.drillAttempts) ? source.drillAttempts : fallback.drillAttempts,
     handReviews: normalizeHandReviews(source.handReviews),
-    savedMistakes: normalizeMistakes(source.savedMistakes)
+    savedMistakes: normalizeMistakes(source.savedMistakes),
+    beginnerMode: typeof source.beginnerMode === "boolean" ? source.beginnerMode : fallback.beginnerMode,
+    xp: Number.isFinite(Number(source.xp)) ? Number(source.xp) : fallback.xp,
+    xpEvents: Array.isArray(source.xpEvents) ? source.xpEvents : fallback.xpEvents,
+    badges: Array.isArray(source.badges) ? [...new Set(source.badges)] : fallback.badges,
+    dailyActivity: source.dailyActivity && typeof source.dailyActivity === "object" ? source.dailyActivity : fallback.dailyActivity
   };
 }
 

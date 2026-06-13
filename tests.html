@@ -20,6 +20,7 @@
       import { escapeHtml } from "./src/lib/sanitize.js";
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
+      import { awardBadge, awardXp, getDailyTasks, getLevel, markDailyActivity } from "./src/lib/rewards.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -58,6 +59,23 @@
         }],
         ["invalid import envelope is rejected", () => {
           return !validateImportEnvelope({ app: "other", version: 1, state: {} }).ok;
+        }],
+        ["reward migration defaults beginner mode on", () => {
+          const state = normalizeState({});
+          return state.beginnerMode === true && state.xp === 0 && Array.isArray(state.badges);
+        }],
+        ["getLevel(0) returns level 1", () => getLevel(0) === 1],
+        ["awardXp increases xp and appends event", () => {
+          const state = awardXp(normalizeState({}), "test", 30, "测试");
+          return state.xp === 30 && state.xpEvents.length === 1;
+        }],
+        ["awardBadge stores badge once", () => {
+          const state = awardBadge(awardBadge(normalizeState({}), "first-lesson"), "first-lesson");
+          return state.badges.length === 1;
+        }],
+        ["daily training task completes at five answers", () => {
+          const state = markDailyActivity(normalizeState({}), "trainCount", 5, new Date("2026-06-13T00:00:00Z"));
+          return getDailyTasks(state, new Date("2026-06-13T00:00:00Z")).train;
         }]
       ];
 
