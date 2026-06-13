@@ -700,6 +700,22 @@ h1 {
   color: var(--muted);
 }
 
+.xp-hint {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(244, 201, 93, 0.28);
+  color: #6d4c00;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.session-summary {
+  display: grid;
+  gap: 14px;
+}
+
 .review-form {
   align-self: start;
   display: grid;

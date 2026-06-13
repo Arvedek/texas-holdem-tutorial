@@ -1,9 +1,12 @@
 import { drillTypes } from "../data/drills.js";
+import { BADGES, awardBadge, awardXp, getDailyTasks, markDailyActivity, maybeAwardDailyBonus } from "../lib/rewards.js";
+import { escapeHtml } from "../lib/sanitize.js";
 
 let selectedType = "preflop";
 let questionIndexByType = {};
 let lastAnswer = null;
 let consumedTargetQuestionId = null;
+let sessionAttempts = [];
 
 function getStats(attempts) {
   const correct = attempts.filter((attempt) => attempt.correct).length;
@@ -46,6 +49,49 @@ function upsertMistake(savedMistakes, questionId, selectedAnswer) {
   });
 }
 
+function getSessionSummary(attempts, drills) {
+  if (attempts.length < 5) {
+    return "";
+  }
+
+  const byType = attempts.reduce((acc, attempt) => {
+    const drill = drills.find((item) => item.id === attempt.questionId);
+    const type = drill?.type || "unknown";
+    acc[type] = acc[type] || [];
+    acc[type].push(attempt);
+    return acc;
+  }, {});
+
+  const rows = Object.entries(byType).map(([type, typeAttempts]) => ({
+    type,
+    label: drillTypes[type] || type,
+    total: typeAttempts.length,
+    accuracy: getStats(typeAttempts).accuracy
+  })).sort((a, b) => b.accuracy - a.accuracy || b.total - a.total);
+
+  const strongest = rows[0];
+  const weakest = [...rows].sort((a, b) => a.accuracy - b.accuracy || b.total - a.total)[0];
+  const stats = getStats(attempts);
+
+  return `
+    <aside class="panel session-summary">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Session Summary</p>
+          <h3>这一轮已经完成 ${stats.total} 题</h3>
+        </div>
+        <strong>${stats.accuracy}%</strong>
+      </div>
+      <div class="grid three">
+        <div class="metric"><span class="muted">答对</span><strong>${stats.correct}</strong></div>
+        <div class="metric"><span class="muted">最稳</span><strong>${escapeHtml(strongest?.label || "待观察")}</strong></div>
+        <div class="metric"><span class="muted">优先补</span><strong>${escapeHtml(weakest?.label || "待观察")}</strong></div>
+      </div>
+      <p class="muted">下一步建议：继续做 5 题 ${escapeHtml(weakest?.label || "当前类型")}，然后去错题本复盘答错题。</p>
+    </aside>
+  `;
+}
+
 export function renderTraining({ app, state, setState, data, trainingTargetQuestionId }) {
   if (trainingTargetQuestionId && trainingTargetQuestionId !== consumedTargetQuestionId) {
     const target = data.drills.find((drill) => drill.id === trainingTargetQuestionId);
@@ -84,13 +130,15 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
       </div>
     </section>
 
+    ${getSessionSummary(sessionAttempts, data.drills)}
+
     <section class="training-layout">
       <aside class="panel filter-panel">
         <h3>训练类型</h3>
         <div class="chip-list">
           ${Object.entries(drillTypes).map(([type, label]) => `
-            <button class="chip-button ${type === selectedType ? "is-active" : ""}" data-drill-type="${type}">
-              ${label}
+            <button class="chip-button ${type === selectedType ? "is-active" : ""}" data-drill-type="${escapeHtml(type)}">
+              ${escapeHtml(label)}
             </button>
           `).join("")}
         </div>
@@ -98,21 +146,22 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
 
       <article class="panel question-panel">
         <div class="question-meta">
-          <span class="tag">${question.level}</span>
-          <span class="tag is-soft">${drillTypes[question.type]}</span>
+          <span class="tag">${escapeHtml(question.level)}</span>
+          <span class="tag is-soft">${escapeHtml(drillTypes[question.type])}</span>
         </div>
-        <h2>${question.prompt}</h2>
+        <h2>${escapeHtml(question.prompt)}</h2>
         <div class="choice-grid">
           ${question.options.map((option) => `
-            <button class="choice-button ${lastAnswer?.selected === option ? "is-selected" : ""}" data-answer="${option}">
-              ${option}
+            <button class="choice-button ${lastAnswer?.selected === option ? "is-selected" : ""}" data-answer="${escapeHtml(option)}">
+              ${escapeHtml(option)}
             </button>
           `).join("")}
         </div>
         ${lastAnswer?.questionId === question.id ? `
           <div class="answer-panel ${lastAnswer.correct ? "is-correct" : "is-wrong"}">
-            <strong>${lastAnswer.correct ? "正确" : "需要复盘"}：${question.answer}</strong>
-            <p>${question.explanation}</p>
+            <strong>${lastAnswer.correct ? "正确" : "需要复盘"}：${escapeHtml(question.answer)}</strong>
+            <p>${escapeHtml(question.explanation)}</p>
+            <span class="xp-hint">+${lastAnswer.correct ? 10 : 5} XP</span>
           </div>
         ` : ""}
         <div class="button-row">
@@ -139,19 +188,43 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
         selected,
         correct
       };
-      setState((current) => ({
-        ...current,
-        drillAttempts: [
-          ...current.drillAttempts,
-          {
-            questionId: question.id,
-            selectedAnswer: selected,
-            correct,
-            timestamp: new Date().toISOString()
-          }
-        ],
-        savedMistakes: correct ? current.savedMistakes : upsertMistake(current.savedMistakes, question.id, selected)
-      }));
+      sessionAttempts = [
+        ...sessionAttempts,
+        {
+          questionId: question.id,
+          selectedAnswer: selected,
+          correct,
+          timestamp: new Date().toISOString()
+        }
+      ];
+
+      setState((current) => {
+        const attempt = {
+          questionId: question.id,
+          selectedAnswer: selected,
+          correct,
+          timestamp: new Date().toISOString()
+        };
+        const dailyTasks = getDailyTasks(current);
+        let next = {
+          ...current,
+          drillAttempts: [...current.drillAttempts, attempt],
+          savedMistakes: correct ? current.savedMistakes : upsertMistake(current.savedMistakes, question.id, selected)
+        };
+
+        next = awardXp(next, "drill-answer", 5, "完成训练题");
+        if (correct) {
+          next = awardXp(next, "drill-correct", 5, "训练题答对奖励");
+        }
+
+        next = markDailyActivity(next, "trainCount", dailyTasks.trainCount + 1);
+        next = awardBadge(next, BADGES.FIRST_TRAINING);
+        if (next.drillAttempts.length >= 10) {
+          next = awardBadge(next, BADGES.TEN_DRILLS);
+        }
+
+        return maybeAwardDailyBonus(next);
+      });
     });
   });
 
