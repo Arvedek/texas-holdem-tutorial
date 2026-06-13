@@ -1,5 +1,42 @@
+import { BADGES, awardBadge, awardXp, markDailyActivity, maybeAwardDailyBonus } from "../lib/rewards.js";
+import { escapeHtml } from "../lib/sanitize.js";
+
 function list(items) {
-  return items.map((item) => `<li>${item}</li>`).join("");
+  return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
+function beginnerPanel(lesson, enabled) {
+  if (!enabled) {
+    return "";
+  }
+
+  return `
+    <details class="beginner-panel" open>
+      <summary>
+        <span>新手拆解</span>
+        ${lesson.beginnerSafe ? `<strong>新手安全路径</strong>` : ""}
+      </summary>
+      <div class="beginner-grid">
+        <div>
+          <h4>白话版</h4>
+          <p>${escapeHtml(lesson.plainLanguage)}</p>
+        </div>
+        <div>
+          <h4>牌桌例子</h4>
+          <p>${escapeHtml(lesson.tableExample)}</p>
+        </div>
+        <div>
+          <h4>为什么重要</h4>
+          <p>${escapeHtml(lesson.whyItMatters)}</p>
+        </div>
+      </div>
+      <div class="beginner-checklist">
+        <h4>这一课先做到</h4>
+        <ul>${list(lesson.miniChecklist)}</ul>
+      </div>
+      <p class="encouragement">${escapeHtml(lesson.encouragement)}</p>
+    </details>
+  `;
 }
 
 export function renderLearning({ app, state, setState, data }) {
@@ -27,13 +64,15 @@ export function renderLearning({ app, state, setState, data }) {
             <div class="lesson-body">
               <div class="section-heading">
                 <div>
-                  <h3>${lesson.title}</h3>
-                  <p>${lesson.summary}</p>
+                  <h3>${escapeHtml(lesson.title)}</h3>
+                  <p>${escapeHtml(lesson.summary)}</p>
                 </div>
-                <button class="${done ? "ghost-button" : "primary-button"}" data-lesson-toggle="${lesson.id}">
+                <button class="${done ? "ghost-button" : "primary-button"}" data-lesson-toggle="${escapeHtml(lesson.id)}">
                   ${done ? "标记未完成" : "标记完成"}
                 </button>
               </div>
+
+              ${beginnerPanel(lesson, state.beginnerMode)}
 
               <div class="lesson-columns">
                 <div>
@@ -46,13 +85,13 @@ export function renderLearning({ app, state, setState, data }) {
                 </div>
                 <div>
                   <h4>练习任务</h4>
-                  <p>${lesson.task}</p>
+                  <p>${escapeHtml(lesson.task)}</p>
                 </div>
               </div>
 
               <div class="tag-row">
-                ${lesson.drillTags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
-                ${lesson.resourceTags.map((tag) => `<span class="tag is-soft">${tag}</span>`).join("")}
+                ${lesson.drillTags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+                ${lesson.resourceTags.map((tag) => `<span class="tag is-soft">${escapeHtml(tag)}</span>`).join("")}
               </div>
             </div>
           </article>
@@ -68,13 +107,28 @@ export function renderLearning({ app, state, setState, data }) {
         const currentCompleted = new Set(current.completedLessons);
         if (currentCompleted.has(lessonId)) {
           currentCompleted.delete(lessonId);
-        } else {
-          currentCompleted.add(lessonId);
+          return {
+            ...current,
+            completedLessons: [...currentCompleted]
+          };
         }
-        return {
+
+        currentCompleted.add(lessonId);
+        const lesson = data.lessons.find((item) => item.id === lessonId);
+        const lessonRewardType = `lesson:${lessonId}`;
+        const alreadyRewarded = current.xpEvents?.some((event) => event.type === lessonRewardType);
+        let next = {
           ...current,
           completedLessons: [...currentCompleted]
         };
+
+        if (!alreadyRewarded && lesson) {
+          next = awardXp(next, lessonRewardType, 30, `完成课程：${lesson.title}`);
+          next = awardBadge(next, BADGES.FIRST_LESSON);
+        }
+
+        next = markDailyActivity(next, "lesson", true);
+        return maybeAwardDailyBonus(next);
       });
     });
   });

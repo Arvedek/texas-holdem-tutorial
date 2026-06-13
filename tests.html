@@ -21,6 +21,7 @@
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, getDailyTasks, getLevel, markDailyActivity } from "./src/lib/rewards.js";
+      import { lessons } from "./src/data/lessons.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -76,6 +77,17 @@
         ["daily training task completes at five answers", () => {
           const state = markDailyActivity(normalizeState({}), "trainCount", 5, new Date("2026-06-13T00:00:00Z"));
           return getDailyTasks(state, new Date("2026-06-13T00:00:00Z")).train;
+        }],
+        ["all lessons include beginner expansion fields", () => {
+          return lessons.every((lesson) => lesson.plainLanguage
+            && lesson.tableExample
+            && lesson.whyItMatters
+            && Array.isArray(lesson.miniChecklist)
+            && lesson.miniChecklist.length >= 3
+            && lesson.encouragement);
+        }],
+        ["first four lessons are beginner safe", () => {
+          return lessons.slice(0, 4).every((lesson) => lesson.beginnerSafe === true);
         }]
       ];
 

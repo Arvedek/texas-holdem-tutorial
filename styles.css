@@ -418,6 +418,67 @@ h1 {
   line-height: 1.65;
 }
 
+.beginner-panel {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid rgba(15, 90, 67, 0.18);
+  border-radius: 8px;
+  background: rgba(15, 90, 67, 0.055);
+}
+
+.beginner-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--felt);
+  font-weight: 800;
+}
+
+.beginner-panel summary strong {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(244, 201, 93, 0.26);
+  color: #6d4c00;
+  font-size: 12px;
+}
+
+.beginner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.beginner-grid h4,
+.beginner-checklist h4 {
+  margin: 0 0 6px;
+}
+
+.beginner-grid p,
+.beginner-checklist li,
+.encouragement {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.beginner-checklist {
+  margin-top: 12px;
+}
+
+.beginner-checklist ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.encouragement {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(15, 90, 67, 0.14);
+  font-weight: 700;
+}
+
 .tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -740,6 +801,7 @@ textarea {
 
   .lesson-card,
   .lesson-columns,
+  .beginner-grid,
   .training-layout,
   .choice-grid,
   .form-grid,
