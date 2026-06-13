@@ -106,9 +106,18 @@ function renderNextSteps(lesson) {
   `).join("");
 }
 
+function hasQuizSelection(lesson) {
+  return (lesson.quiz || []).some((_, questionIndex) => {
+    const key = `${lesson.id}:${questionIndex}`;
+    return Object.prototype.hasOwnProperty.call(quizSelections, key);
+  });
+}
+
 function textbookPanel(lesson, completed) {
+  const panelOpen = !completed || hasQuizSelection(lesson);
+
   return `
-    <details class="textbook-panel" ${completed ? "" : "open"}>
+    <details class="textbook-panel" ${panelOpen ? "open" : ""}>
       <summary>
         <span>展开学习</span>
         <strong>${escapeHtml((lesson.textbook || []).length)} 个核心段落</strong>
