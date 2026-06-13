@@ -92,6 +92,41 @@
         ["first four lessons are beginner safe", () => {
           return lessons.slice(0, 4).every((lesson) => lesson.beginnerSafe === true);
         }],
+        ["all lessons include textbook goals", () => {
+          return lessons.every((lesson) => Array.isArray(lesson.goals) && lesson.goals.length >= 2);
+        }],
+        ["all lessons include at least three textbook sections", () => {
+          return lessons.every((lesson) => Array.isArray(lesson.textbook)
+            && lesson.textbook.length >= 3
+            && lesson.textbook.every((section) => section.heading && section.body));
+        }],
+        ["all lessons include worked examples and decision flow", () => {
+          return lessons.every((lesson) => Array.isArray(lesson.examples)
+            && lesson.examples.length >= 1
+            && lesson.examples.every((example) => example.title && example.scenario && example.takeaway)
+            && Array.isArray(lesson.decisionFlow)
+            && lesson.decisionFlow.length >= 3);
+        }],
+        ["all lessons include mistake details", () => {
+          return lessons.every((lesson) => Array.isArray(lesson.mistakeDetails)
+            && lesson.mistakeDetails.length >= 2
+            && lesson.mistakeDetails.every((item) => item.mistake && item.whyItHurts));
+        }],
+        ["all lesson quizzes have three answerable questions", () => {
+          return lessons.every((lesson) => Array.isArray(lesson.quiz)
+            && lesson.quiz.length === 3
+            && lesson.quiz.every((item) => item.question
+              && Array.isArray(item.options)
+              && item.options.length >= 2
+              && item.options.includes(item.answer)
+              && item.explanation));
+        }],
+        ["all lessons include next step actions", () => {
+          const validRoutes = new Set(["learning", "ranges", "glossary", "training", "mistakes", "review", "resources"]);
+          return lessons.every((lesson) => Array.isArray(lesson.nextSteps)
+            && lesson.nextSteps.length >= 1
+            && lesson.nextSteps.every((step) => step.label && validRoutes.has(step.route)));
+        }],
         ["glossary includes at least 16 beginner terms", () => {
           return glossaryTerms.length >= 16
             && glossaryTerms.every((item) => item.term && item.category && item.simple && item.example);
