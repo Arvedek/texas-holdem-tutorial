@@ -20,7 +20,7 @@
       import { escapeHtml } from "./src/lib/sanitize.js";
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
-      import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity } from "./src/lib/rewards.js";
+      import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js";
       import { glossaryTerms } from "./src/data/glossary.js";
@@ -109,6 +109,17 @@
         ["mastery returns four skill bars", () => {
           const mastery = calculateMastery(normalizeState({}), lessons, drills);
           return mastery.length === 4 && mastery.every((item) => item.id && item.label && Number.isFinite(item.value));
+        }],
+        ["daily bonus awards once after all tasks complete", () => {
+          const date = new Date("2026-06-13T00:00:00Z");
+          const withLesson = markDailyActivity(normalizeState({}), "lesson", true, date);
+          const withTraining = markDailyActivity(withLesson, "trainCount", 5, date);
+          const withReview = markDailyActivity(withTraining, "review", true, date);
+          const awarded = maybeAwardDailyBonus(withReview, date);
+          const awardedAgain = maybeAwardDailyBonus(awarded, date);
+          return awarded.xp === 40
+            && awardedAgain.xp === 40
+            && getDailyTasks(awarded, date).bonusAwarded;
         }]
       ];
 

@@ -1,6 +1,7 @@
 import { parseCards, hasDuplicateCards, formatCard } from "../lib/cards.js";
 import { calculatePotOdds, calculateSpr, classifyStartingHand } from "../lib/pokerMath.js";
 import { analyzeBoardTexture } from "../lib/boardTexture.js";
+import { BADGES, awardBadge, awardXp, markDailyActivity, maybeAwardDailyBonus } from "../lib/rewards.js";
 import { escapeHtml, escapeAttribute } from "../lib/sanitize.js";
 
 const ERROR_TYPES = ["范围错误", "赔率错误", "下注尺度", "情绪问题", "价值下注", "诈唬选择", "防守频率"];
@@ -266,26 +267,33 @@ export function renderReview({ app, state, setState }) {
       return;
     }
 
-    setState((current) => ({
-      ...current,
-      handReviews: [
-        ...current.handReviews,
-        {
-          id: `review-${Date.now()}`,
-          ...form,
-          heroHand: nextAnalysis.heroCards.map(formatCard).join(" "),
-          board: nextAnalysis.boardCards.map(formatCard).join(" "),
-          analysis: {
-            potOdds: nextAnalysis.potOdds,
-            spr: nextAnalysis.spr,
-            decisionLabel: nextAnalysis.decisionLabel,
-            textureLabels: nextAnalysis.texture.labels
-          },
-          notes: form.opponentNotes,
-          tags: [...nextAnalysis.texture.labels, ...(form.errorTypes || [])],
-          createdAt: new Date().toISOString()
-        }
-      ]
-    }));
+    setState((current) => {
+      let next = {
+        ...current,
+        handReviews: [
+          ...current.handReviews,
+          {
+            id: `review-${Date.now()}`,
+            ...form,
+            heroHand: nextAnalysis.heroCards.map(formatCard).join(" "),
+            board: nextAnalysis.boardCards.map(formatCard).join(" "),
+            analysis: {
+              potOdds: nextAnalysis.potOdds,
+              spr: nextAnalysis.spr,
+              decisionLabel: nextAnalysis.decisionLabel,
+              textureLabels: nextAnalysis.texture.labels
+            },
+            notes: form.opponentNotes,
+            tags: [...nextAnalysis.texture.labels, ...(form.errorTypes || [])],
+            createdAt: new Date().toISOString()
+          }
+        ]
+      };
+
+      next = awardXp(next, "hand-review", 25, "保存一条手牌复盘");
+      next = markDailyActivity(next, "review", true);
+      next = awardBadge(next, BADGES.FIRST_REVIEW);
+      return maybeAwardDailyBonus(next);
+    });
   });
 }

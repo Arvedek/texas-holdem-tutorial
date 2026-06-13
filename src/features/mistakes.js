@@ -1,4 +1,5 @@
 import { drillTypes } from "../data/drills.js";
+import { BADGES, awardBadge, awardXp } from "../lib/rewards.js";
 import { escapeHtml, escapeAttribute } from "../lib/sanitize.js";
 
 let filters = {
@@ -127,12 +128,27 @@ export function renderMistakes({ app, state, setState, data, openTrainingQuestio
         ...filters,
         status
       };
-      setState((current) => ({
-        ...current,
-        savedMistakes: current.savedMistakes.map((mistake) => (
+      setState((current) => {
+        const wasUnresolved = current.savedMistakes.some((mistake) => (
+          mistake.questionId === questionId && mistake.status !== "mastered"
+        ));
+        const savedMistakes = current.savedMistakes.map((mistake) => (
           mistake.questionId === questionId ? { ...mistake, status } : mistake
-        ))
-      }));
+        ));
+        let next = {
+          ...current,
+          savedMistakes
+        };
+
+        if (status === "mastered" && wasUnresolved) {
+          next = awardXp(next, "mistake-mastered", 20, "掌握一道错题");
+          if (savedMistakes.length && savedMistakes.every((mistake) => mistake.status === "mastered")) {
+            next = awardBadge(next, BADGES.MISTAKE_CLEAR);
+          }
+        }
+
+        return next;
+      });
     });
   });
 }
