@@ -712,6 +712,86 @@ textarea {
   color: var(--muted);
 }
 
+.tool-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 220px;
+  gap: 12px;
+}
+
+.glossary-grid,
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.term-card,
+.range-card {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.term-card h3,
+.range-card h3 {
+  margin: 0;
+}
+
+.term-card p,
+.range-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.range-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(124, 115, 96, 0.18);
+}
+
+.range-head strong {
+  color: var(--felt);
+  font-size: 28px;
+}
+
+.range-head span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.range-block {
+  display: grid;
+  gap: 8px;
+}
+
+.range-block h4 {
+  margin: 0;
+}
+
+.range-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.range-chip {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(15, 90, 67, 0.09);
+  color: var(--felt);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.range-chip-row.is-warning .range-chip {
+  background: rgba(145, 44, 30, 0.08);
+  color: #8f2f21;
+}
+
 .external-link {
   margin-top: auto;
   color: var(--felt);
@@ -808,6 +888,9 @@ textarea {
   .checkbox-grid,
   .review-tools,
   .analysis-grid,
+  .tool-filters,
+  .glossary-grid,
+  .range-grid,
   .resource-filters,
   .resource-grid,
   .mistake-filters,

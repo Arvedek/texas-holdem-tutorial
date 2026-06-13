@@ -1,6 +1,8 @@
 import { lessons } from "./data/lessons.js";
 import { drills } from "./data/drills.js";
 import { resources } from "./data/resources.js";
+import { glossaryTerms } from "./data/glossary.js";
+import { preflopRanges } from "./data/preflopRanges.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
 import { createExportEnvelope, createImportPreview, downloadJson, validateImportEnvelope } from "./lib/importExport.js";
 import { escapeHtml } from "./lib/sanitize.js";
@@ -10,6 +12,8 @@ import { renderTraining } from "./features/training.js";
 import { renderMistakes } from "./features/mistakes.js";
 import { renderReview } from "./features/review.js";
 import { renderResources } from "./features/resources.js";
+import { renderGlossary } from "./features/glossary.js";
+import { renderRanges } from "./features/ranges.js";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
@@ -23,6 +27,8 @@ const importPreview = document.querySelector("#import-preview");
 const routeTitles = {
   dashboard: "仪表盘",
   learning: "学习路径",
+  ranges: "翻前范围",
+  glossary: "术语表",
   training: "训练中心",
   mistakes: "错题本",
   review: "手牌复盘",
@@ -49,7 +55,7 @@ function renderPlaceholder(route) {
     <div class="panel placeholder">
       <div>
         <p class="eyebrow">MVP Module</p>
-        <h2>${routeTitles[route]}</h2>
+        <h2>${escapeHtml(routeTitles[route])}</h2>
         <p class="muted">模块骨架已加载：${lessons.length} 个学习阶段，${drills.length} 道训练题，${resources.length} 个资源。</p>
         <p class="muted">本地状态：${completedCount} 个课程完成，${attempts} 次训练记录，${reviews} 条复盘。</p>
       </div>
@@ -67,7 +73,9 @@ function getContext() {
     data: {
       lessons,
       drills,
-      resources
+      resources,
+      glossaryTerms,
+      preflopRanges
     },
     navigate: setRoute
   };
@@ -92,6 +100,16 @@ function setRoute(route) {
 
   if (route === "learning") {
     renderLearning(getContext());
+    return;
+  }
+
+  if (route === "ranges") {
+    renderRanges(getContext());
+    return;
+  }
+
+  if (route === "glossary") {
+    renderGlossary(getContext());
     return;
   }
 

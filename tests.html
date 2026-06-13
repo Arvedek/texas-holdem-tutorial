@@ -22,6 +22,8 @@
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, getDailyTasks, getLevel, markDailyActivity } from "./src/lib/rewards.js";
       import { lessons } from "./src/data/lessons.js";
+      import { glossaryTerms } from "./src/data/glossary.js";
+      import { preflopRanges } from "./src/data/preflopRanges.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -88,6 +90,14 @@
         }],
         ["first four lessons are beginner safe", () => {
           return lessons.slice(0, 4).every((lesson) => lesson.beginnerSafe === true);
+        }],
+        ["glossary includes at least 16 beginner terms", () => {
+          return glossaryTerms.length >= 16
+            && glossaryTerms.every((item) => item.term && item.category && item.simple && item.example);
+        }],
+        ["preflop ranges cover all six 6-max positions", () => {
+          const positions = new Set(preflopRanges.map((item) => item.position));
+          return ["UTG", "HJ", "CO", "BTN", "SB", "BB"].every((position) => positions.has(position));
         }]
       ];
 
