@@ -595,6 +595,135 @@ h1 {
   padding-left: 18px;
 }
 
+.textbook-panel {
+  margin: 16px 0;
+  padding: 16px;
+  border: 1px solid rgba(124, 115, 96, 0.22);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 253, 247, 0.62)),
+    rgba(255, 255, 255, 0.62);
+}
+
+.textbook-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.textbook-panel summary::marker {
+  color: var(--gold);
+}
+
+.textbook-panel summary span {
+  min-width: 0;
+}
+
+.textbook-panel summary strong {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(196, 146, 58, 0.16);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.textbook-panel .beginner-checklist {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(15, 90, 67, 0.045);
+}
+
+.textbook-panel .beginner-checklist + .beginner-checklist,
+.textbook-panel .lesson-columns + .beginner-checklist {
+  margin-top: 12px;
+}
+
+.textbook-panel .lesson-columns {
+  margin-top: 14px;
+}
+
+.textbook-panel .lesson-columns > div {
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.textbook-panel h5 {
+  margin: 10px 0 6px;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.textbook-panel p,
+.textbook-panel ol {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.textbook-panel p {
+  margin-bottom: 0;
+}
+
+.textbook-panel p + p {
+  margin-top: 6px;
+}
+
+.textbook-panel ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.textbook-panel .beginner-checklist > div + div {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(15, 90, 67, 0.1);
+}
+
+.textbook-panel .question-panel {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  gap: 10px;
+}
+
+.textbook-panel .question-panel h5 {
+  margin-top: 0;
+}
+
+.textbook-panel .question-panel + .question-panel {
+  margin-top: 10px;
+}
+
+.textbook-panel .choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.textbook-panel .choice-button {
+  width: 100%;
+  min-height: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.textbook-panel .answer-panel {
+  margin-top: 2px;
+}
+
+.textbook-panel [data-next-route] {
+  width: 100%;
+  margin-top: 10px;
+  white-space: normal;
+}
+
 .encouragement {
   margin: 12px 0 0;
   padding-top: 12px;
@@ -1041,5 +1170,10 @@ textarea {
 
   .lesson-stage {
     min-height: auto;
+  }
+
+  .textbook-panel .lesson-columns,
+  .textbook-panel .choice-grid {
+    grid-template-columns: 1fr;
   }
 }
