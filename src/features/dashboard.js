@@ -1,4 +1,15 @@
+import { BADGES, calculateMastery, calculateStreak, getDailyTasks, getLevel } from "../lib/rewards.js";
 import { escapeHtml } from "../lib/sanitize.js";
+
+const BADGE_LABELS = {
+  [BADGES.FIRST_LESSON]: "第一课完成",
+  [BADGES.FIRST_TRAINING]: "第一次训练",
+  [BADGES.TEN_DRILLS]: "十题热身",
+  [BADGES.FIRST_REVIEW]: "第一条复盘",
+  [BADGES.MISTAKE_CLEAR]: "清空错题",
+  [BADGES.ODDS_BEGINNER]: "赔率入门",
+  [BADGES.STREAK_THREE]: "三日连续"
+};
 
 function getAccuracy(attempts) {
   const correct = attempts.filter((attempt) => attempt.correct).length;
@@ -54,18 +65,62 @@ function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson }
   };
 }
 
-export function renderDashboard({ app, state, data, navigate }) {
+function renderDailyTasks(tasks) {
+  const items = [
+    { done: tasks.lesson, label: "学一节", detail: "完成任意课程" },
+    { done: tasks.train, label: "练五题", detail: `${Math.min(tasks.trainCount, 5)}/5 题` },
+    { done: tasks.review, label: "写复盘", detail: "保存一条手牌" }
+  ];
+
+  return items.map((item) => `
+    <div class="daily-task ${item.done ? "is-done" : ""}">
+      <strong>${item.done ? "✓" : "·"}</strong>
+      <span>${escapeHtml(item.label)}</span>
+      <small>${escapeHtml(item.detail)}</small>
+    </div>
+  `).join("");
+}
+
+function renderBadges(badges) {
+  if (!badges.length) {
+    return `<p class="muted">还没有徽章。完成第一课或第一组训练后，这里会亮起来。</p>`;
+  }
+
+  return badges.slice(-4).reverse().map((badge) => `
+    <span class="badge-pill">${escapeHtml(BADGE_LABELS[badge] || badge)}</span>
+  `).join("");
+}
+
+function renderMasteryBars(mastery) {
+  return mastery.map((item) => `
+    <div class="mastery-row">
+      <div>
+        <strong>${escapeHtml(item.label)}</strong>
+        <span>${item.value}%</span>
+      </div>
+      <div class="mastery-bar" aria-label="${escapeHtml(item.label)} ${item.value}%">
+        <span style="width:${item.value}%"></span>
+      </div>
+    </div>
+  `).join("");
+}
+
+export function renderDashboard({ app, state, setState, data, navigate }) {
   const { lessons, drills } = data;
   const completed = new Set(state.completedLessons);
   const nextLesson = lessons.find((lesson) => !completed.has(lesson.id)) || lessons[lessons.length - 1];
   const attempts = state.drillAttempts;
-  const accuracy = getAccuracy(attempts);
   const recentAccuracy = getAccuracy(attempts.slice(-10));
   const unresolvedMistakes = state.savedMistakes.filter((mistake) => mistake.status !== "mastered");
   const recentReviews = [...state.handReviews].slice(-3).reverse();
   const suggestedDrills = drills.filter((drill) => nextLesson.drillTags.some((tag) => drill.tags.includes(tag))).slice(0, 4);
   const completionRate = Math.round((completed.size / lessons.length) * 100);
   const topErrorTypes = getTopErrorTypes(state.handReviews);
+  const level = getLevel(state.xp);
+  const xpIntoLevel = (state.xp || 0) % 100;
+  const streak = calculateStreak(state.dailyActivity);
+  const dailyTasks = getDailyTasks(state);
+  const mastery = calculateMastery(state, lessons, drills);
   const recommendation = getRecommendation({
     unresolvedMistakes,
     attempts,
@@ -89,6 +144,69 @@ export function renderDashboard({ app, state, data, navigate }) {
           <strong>${completionRate}%</strong>
           <span>学习进度</span>
         </div>
+      </section>
+
+      <section class="retention-grid">
+        <article class="panel level-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Progress</p>
+              <h3>Level ${level}</h3>
+            </div>
+            <strong>${state.xp || 0} XP</strong>
+          </div>
+          <div class="progress-bar" aria-label="等级经验">
+            <span style="width:${xpIntoLevel}%"></span>
+          </div>
+          <p class="muted">距离下一级还差 ${100 - xpIntoLevel} XP。</p>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Daily</p>
+              <h3>${streak} 天连续学习</h3>
+            </div>
+            <span class="tag ${dailyTasks.bonusAwarded ? "" : "is-soft"}">${dailyTasks.bonusAwarded ? "今日奖励已领" : "完成三项 +40 XP"}</span>
+          </div>
+          <div class="daily-task-grid">${renderDailyTasks(dailyTasks)}</div>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Mode</p>
+              <h3>新手模式</h3>
+            </div>
+            <label class="toggle-label">
+              <input type="checkbox" data-beginner-toggle ${state.beginnerMode ? "checked" : ""}>
+              <span>${state.beginnerMode ? "开启" : "关闭"}</span>
+            </label>
+          </div>
+          <p class="muted">开启后课程会显示白话解释、牌桌例子和微清单。熟悉后可以关闭，让界面更紧凑。</p>
+        </article>
+      </section>
+
+      <section class="grid two">
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Skill Map</p>
+              <h3>能力掌握度</h3>
+            </div>
+          </div>
+          <div class="mastery-list">${renderMasteryBars(mastery)}</div>
+        </article>
+
+        <article class="panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Badges</p>
+              <h3>最近徽章</h3>
+            </div>
+          </div>
+          <div class="badge-row">${renderBadges(state.badges || [])}</div>
+        </article>
       </section>
 
       <section class="grid three">
@@ -178,6 +296,8 @@ export function renderDashboard({ app, state, data, navigate }) {
 
       <section class="panel quick-actions">
         <button class="quick-action" data-action="go-learning"><strong>学习路径</strong><span>按阶段补短板</span></button>
+        <button class="quick-action" data-action="go-ranges"><strong>翻前范围</strong><span>先照着稳住</span></button>
+        <button class="quick-action" data-action="go-glossary"><strong>术语表</strong><span>看懂黑话</span></button>
         <button class="quick-action" data-action="go-training"><strong>训练中心</strong><span>用题目校准直觉</span></button>
         <button class="quick-action" data-action="go-mistakes"><strong>错题本</strong><span>复习未掌握题</span></button>
         <button class="quick-action" data-action="go-review"><strong>手牌复盘</strong><span>记录关键决策</span></button>
@@ -191,5 +311,12 @@ export function renderDashboard({ app, state, data, navigate }) {
       const route = button.dataset.action.replace("go-", "");
       navigate(route);
     });
+  });
+
+  app.querySelector("[data-beginner-toggle]").addEventListener("change", (event) => {
+    setState((current) => ({
+      ...current,
+      beginnerMode: event.target.checked
+    }));
   });
 }

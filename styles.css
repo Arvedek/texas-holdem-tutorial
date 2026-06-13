@@ -319,7 +319,7 @@ h1 {
 
 .quick-actions {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 
@@ -342,6 +342,129 @@ h1 {
 .quick-action span {
   color: var(--muted);
   font-size: 13px;
+}
+
+.retention-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 1fr;
+  gap: 16px;
+}
+
+.level-panel .section-heading strong {
+  color: var(--felt);
+  font-size: 24px;
+}
+
+.daily-task-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.daily-task {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.daily-task strong {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(124, 115, 96, 0.16);
+  color: var(--muted);
+}
+
+.daily-task span {
+  font-weight: 800;
+}
+
+.daily-task small {
+  color: var(--muted);
+}
+
+.daily-task.is-done {
+  border-color: rgba(15, 90, 67, 0.3);
+  background: rgba(15, 90, 67, 0.07);
+}
+
+.daily-task.is-done strong {
+  background: var(--felt);
+  color: #fff;
+}
+
+.toggle-label {
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.toggle-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--felt);
+}
+
+.mastery-list {
+  display: grid;
+  gap: 14px;
+}
+
+.mastery-row {
+  display: grid;
+  gap: 8px;
+}
+
+.mastery-row > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mastery-row span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.mastery-bar {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(15, 90, 67, 0.1);
+}
+
+.mastery-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--felt), var(--gold));
+}
+
+.badge-row {
+  display: flex;
+  min-height: 42px;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  background: rgba(244, 201, 93, 0.28);
+  color: #6d4c00;
+  font-weight: 800;
 }
 
 .section-intro {
@@ -869,6 +992,8 @@ textarea {
 
   .grid.two,
   .grid.three,
+  .retention-grid,
+  .daily-task-grid,
   .hero-panel,
   .quick-actions {
     grid-template-columns: 1fr;
