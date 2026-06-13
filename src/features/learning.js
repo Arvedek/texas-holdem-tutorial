@@ -1,5 +1,7 @@
 import { BADGES, awardBadge, awardXp, markDailyActivity, maybeAwardDailyBonus } from "../lib/rewards.js";
-import { escapeHtml } from "../lib/sanitize.js";
+import { escapeAttribute, escapeHtml } from "../lib/sanitize.js";
+
+let quizSelections = {};
 
 function list(items) {
   return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
@@ -39,7 +41,115 @@ function beginnerPanel(lesson, enabled) {
   `;
 }
 
-export function renderLearning({ app, state, setState, data }) {
+function renderExamples(lesson) {
+  return (lesson.examples || []).map((example) => `
+    <div>
+      <h5>${escapeHtml(example.title)}</h5>
+      <p>${escapeHtml(example.scenario)}</p>
+      <p><strong>要点：</strong>${escapeHtml(example.takeaway)}</p>
+    </div>
+  `).join("");
+}
+
+function renderDecisionFlow(lesson) {
+  return `<ol>${(lesson.decisionFlow || []).map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>`;
+}
+
+function renderMistakeDetails(lesson) {
+  return (lesson.mistakeDetails || []).map((item) => `
+    <div>
+      <h5>${escapeHtml(item.mistake)}</h5>
+      <p>${escapeHtml(item.whyItHurts)}</p>
+    </div>
+  `).join("");
+}
+
+function renderQuiz(lesson) {
+  return (lesson.quiz || []).map((item, questionIndex) => {
+    const key = `${lesson.id}:${questionIndex}`;
+    const selected = quizSelections[key];
+    const isCorrect = selected === item.answer;
+
+    return `
+      <div class="question-panel">
+        <h5>${escapeHtml(item.question)}</h5>
+        <div class="choice-grid">
+          ${item.options.map((option) => `
+            <button
+              class="choice-button ${selected === option ? "is-selected" : ""}"
+              data-quiz-lesson="${escapeAttribute(lesson.id)}"
+              data-quiz-index="${escapeAttribute(questionIndex)}"
+              data-quiz-answer="${escapeAttribute(option)}"
+            >
+              ${escapeHtml(option)}
+            </button>
+          `).join("")}
+        </div>
+        ${selected ? `
+          <div class="answer-panel ${isCorrect ? "" : "is-wrong"}">
+            <strong>${isCorrect ? "回答正确" : "需要复盘"}：${escapeHtml(item.answer)}</strong>
+            <p>${escapeHtml(item.explanation)}</p>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderNextSteps(lesson) {
+  return (lesson.nextSteps || []).map((step) => `
+    <div>
+      <h5>${escapeHtml(step.label)}</h5>
+      <p>${escapeHtml(step.note)}</p>
+      <button class="primary-button" data-next-route="${escapeAttribute(step.route)}">${escapeHtml(step.label)}</button>
+    </div>
+  `).join("");
+}
+
+function textbookPanel(lesson, completed) {
+  return `
+    <details class="textbook-panel" ${completed ? "" : "open"}>
+      <summary>
+        <span>展开学习</span>
+        <strong>${escapeHtml((lesson.textbook || []).length)} 个核心段落</strong>
+      </summary>
+      <div class="beginner-checklist">
+        <h4>学习目标</h4>
+        <ul>${list(lesson.goals || [])}</ul>
+      </div>
+      <div class="lesson-columns">
+        ${(lesson.textbook || []).map((section) => `
+          <div>
+            <h4>${escapeHtml(section.heading)}</h4>
+            <p>${escapeHtml(section.body)}</p>
+          </div>
+        `).join("")}
+      </div>
+      <div class="beginner-checklist">
+        <h4>牌桌例子</h4>
+        ${renderExamples(lesson)}
+      </div>
+      <div class="beginner-checklist">
+        <h4>决策流程</h4>
+        ${renderDecisionFlow(lesson)}
+      </div>
+      <div class="beginner-checklist">
+        <h4>错误拆解</h4>
+        ${renderMistakeDetails(lesson)}
+      </div>
+      <div class="beginner-checklist">
+        <h4>迷你测验</h4>
+        ${renderQuiz(lesson)}
+      </div>
+      <div class="beginner-checklist">
+        <h4>下一步</h4>
+        ${renderNextSteps(lesson)}
+      </div>
+    </details>
+  `;
+}
+
+export function renderLearning({ app, state, setState, data, navigate }) {
   const completed = new Set(state.completedLessons);
   const completionRate = Math.round((completed.size / data.lessons.length) * 100);
 
@@ -67,12 +177,13 @@ export function renderLearning({ app, state, setState, data }) {
                   <h3>${escapeHtml(lesson.title)}</h3>
                   <p>${escapeHtml(lesson.summary)}</p>
                 </div>
-                <button class="${done ? "ghost-button" : "primary-button"}" data-lesson-toggle="${escapeHtml(lesson.id)}">
+                <button class="${done ? "ghost-button" : "primary-button"}" data-lesson-toggle="${escapeAttribute(lesson.id)}">
                   ${done ? "标记未完成" : "标记完成"}
                 </button>
               </div>
 
               ${beginnerPanel(lesson, state.beginnerMode)}
+              ${textbookPanel(lesson, done)}
 
               <div class="lesson-columns">
                 <div>
@@ -130,6 +241,25 @@ export function renderLearning({ app, state, setState, data }) {
         next = markDailyActivity(next, "lesson", true);
         return maybeAwardDailyBonus(next);
       });
+    });
+  });
+
+  app.querySelectorAll("[data-quiz-lesson]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = `${button.dataset.quizLesson}:${button.dataset.quizIndex}`;
+      quizSelections = {
+        ...quizSelections,
+        [key]: button.dataset.quizAnswer
+      };
+      renderLearning({ app, state, setState, data, navigate });
+    });
+  });
+
+  app.querySelectorAll("[data-next-route]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (navigate) {
+        navigate(button.dataset.nextRoute);
+      }
     });
   });
 }
