@@ -248,9 +248,10 @@ with these tests:
 }],
 ["all lessons include valid next step actions", () => {
   const validRoutes = new Set(["learning", "ranges", "glossary", "training", "mistakes", "review", "resources"]);
+  const lessonIds = new Set(lessons.map((lesson) => lesson.id));
   return lessons.every((lesson) => Array.isArray(lesson.nextSteps)
     && lesson.nextSteps.length >= 1
-    && lesson.nextSteps.every((step) => step.label && (validRoutes.has(step.route) || step.chapterId)));
+    && lesson.nextSteps.every((step) => step.label && (validRoutes.has(step.route) || lessonIds.has(step.chapterId))));
 }],
 ["glossary includes at least 120 structured terms", () => {
   return glossaryTerms.length >= 120
