@@ -632,6 +632,22 @@ h1 {
   font-size: 13px;
 }
 
+.chapter-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chapter-meta span {
+  padding: 5px 8px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.64);
+  font-size: 13px;
+}
+
 .textbook-panel .beginner-checklist {
   margin-top: 14px;
   padding: 12px;
@@ -673,6 +689,15 @@ h1 {
 
 .textbook-panel p + p {
   margin-top: 6px;
+}
+
+.textbook-panel .key-takeaway {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  color: var(--ink);
+  background: rgba(244, 201, 93, 0.14);
 }
 
 .textbook-panel ol {

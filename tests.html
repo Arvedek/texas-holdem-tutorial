@@ -26,6 +26,7 @@
       import { drills } from "./src/data/drills.js";
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
+      import { renderLearning } from "./src/features/learning.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -183,6 +184,25 @@
             const result = searchContent(query, lessons, glossaryTerms);
             return result.terms.length >= 1 && result.chapters.length >= 1;
           });
+        }],
+        ["learning path renders full textbook chapter content", () => {
+          const app = document.createElement("div");
+          const lesson = lessons[0];
+          renderLearning({
+            app,
+            state: normalizeState({ beginnerMode: true }),
+            setState: () => {},
+            data: { lessons, glossaryTerms },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return text.includes("18 章")
+            && text.includes(lesson.sections[0].keyTakeaway)
+            && text.includes(lesson.examples[0].analysis)
+            && text.includes(lesson.mistakeDetails[0].betterHabit)
+            && text.includes(lesson.practiceTasks[1].title)
+            && text.includes(glossaryTerms.find((term) => term.id === lesson.relatedTerms[0]).term)
+            && !text.includes("六阶段路线");
         }],
         ["preflop ranges cover all six 6-max positions", () => {
           const positions = new Set(preflopRanges.map((item) => item.position));

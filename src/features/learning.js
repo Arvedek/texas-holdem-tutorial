@@ -46,6 +46,7 @@ function renderExamples(lesson) {
     <div>
       <h5>${escapeHtml(example.title)}</h5>
       <p>${escapeHtml(example.scenario)}</p>
+      <p><strong>分析：</strong>${escapeHtml(example.analysis)}</p>
       <p><strong>要点：</strong>${escapeHtml(example.takeaway)}</p>
     </div>
   `).join("");
@@ -60,8 +61,26 @@ function renderMistakeDetails(lesson) {
     <div>
       <h5>${escapeHtml(item.mistake)}</h5>
       <p>${escapeHtml(item.whyItHurts)}</p>
+      <p><strong>改进习惯：</strong>${escapeHtml(item.betterHabit)}</p>
     </div>
   `).join("");
+}
+
+function renderPracticeTasks(lesson) {
+  return (lesson.practiceTasks || []).map((task) => `
+    <div>
+      <h5>${escapeHtml(task.title)}</h5>
+      <p>${escapeHtml(task.body)}</p>
+    </div>
+  `).join("");
+}
+
+function renderRelatedTerms(lesson, glossaryTerms) {
+  const termsById = new Map((glossaryTerms || []).map((term) => [term.id, term]));
+  return (lesson.relatedTerms || []).map((termId) => {
+    const term = termsById.get(termId);
+    return `<span class="tag is-soft">${escapeHtml(term ? term.term : termId)}</span>`;
+  }).join("");
 }
 
 function renderQuiz(lesson) {
@@ -101,7 +120,13 @@ function renderNextSteps(lesson) {
     <div>
       <h5>${escapeHtml(step.label)}</h5>
       <p>${escapeHtml(step.note)}</p>
-      <button class="primary-button" data-next-route="${escapeAttribute(step.route)}">${escapeHtml(step.label)}</button>
+      <button
+        class="primary-button"
+        data-next-route="${escapeAttribute(step.route)}"
+        ${step.chapterId ? `data-next-chapter="${escapeAttribute(step.chapterId)}"` : ""}
+      >
+        ${escapeHtml(step.label)}
+      </button>
     </div>
   `).join("");
 }
@@ -113,15 +138,20 @@ function hasQuizSelection(lesson) {
   });
 }
 
-function textbookPanel(lesson, completed) {
+function textbookPanel(lesson, completed, glossaryTerms) {
   const panelOpen = !completed || hasQuizSelection(lesson);
 
   return `
     <details class="textbook-panel" ${panelOpen ? "open" : ""}>
       <summary>
-        <span>展开学习</span>
-        <strong>${escapeHtml((lesson.textbook || []).length)} 个核心段落</strong>
+        <span>展开第 ${escapeHtml(lesson.stage)} 章教材</span>
+        <strong>${escapeHtml(lesson.estimatedMinutes)} 分钟 · ${escapeHtml((lesson.textbook || []).length)} 个核心段落</strong>
       </summary>
+      <div class="chapter-meta">
+        <span>${escapeHtml(lesson.subtitle)}</span>
+        <span>${escapeHtml(lesson.difficulty)}</span>
+        <span>${lesson.beginnerSafe ? "新手安全" : "进阶章节"}</span>
+      </div>
       <div class="beginner-checklist">
         <h4>学习目标</h4>
         <ul>${list(lesson.goals || [])}</ul>
@@ -131,6 +161,7 @@ function textbookPanel(lesson, completed) {
           <div>
             <h4>${escapeHtml(section.heading)}</h4>
             <p>${escapeHtml(section.body)}</p>
+            <p class="key-takeaway"><strong>记住：</strong>${escapeHtml(section.keyTakeaway)}</p>
           </div>
         `).join("")}
       </div>
@@ -151,6 +182,14 @@ function textbookPanel(lesson, completed) {
         ${renderQuiz(lesson)}
       </div>
       <div class="beginner-checklist">
+        <h4>练习任务</h4>
+        ${renderPracticeTasks(lesson)}
+      </div>
+      <div class="beginner-checklist">
+        <h4>相关术语</h4>
+        <div class="tag-row">${renderRelatedTerms(lesson, glossaryTerms)}</div>
+      </div>
+      <div class="beginner-checklist">
         <h4>下一步</h4>
         ${renderNextSteps(lesson)}
       </div>
@@ -166,8 +205,8 @@ export function renderLearning({ app, state, setState, data, navigate }) {
     <section class="panel section-intro">
       <div>
         <p class="eyebrow">Learning Path</p>
-        <h2>从规则到复盘的六阶段路线</h2>
-        <p class="muted">每个阶段都先建立一个明确能力，再用训练题和复盘去巩固。</p>
+        <h2>从零开始的完整 18 章学习路径</h2>
+        <p class="muted">按章节学习术语、规则、翻前、翻后、数学、GTO 基础、资金管理和复盘流程；每章都有目标、例子、测验和下一步。</p>
       </div>
       <div class="progress-bar" aria-label="学习完成度">
         <span style="width:${completionRate}%"></span>
@@ -178,8 +217,8 @@ export function renderLearning({ app, state, setState, data, navigate }) {
       ${data.lessons.map((lesson) => {
         const done = completed.has(lesson.id);
         return `
-          <article class="lesson-card ${done ? "is-complete" : ""}">
-            <div class="lesson-stage">阶段 ${lesson.stage}</div>
+          <article class="lesson-card ${done ? "is-complete" : ""}" data-lesson-id="${escapeAttribute(lesson.id)}">
+            <div class="lesson-stage">第 ${lesson.stage} 章</div>
             <div class="lesson-body">
               <div class="section-heading">
                 <div>
@@ -192,7 +231,7 @@ export function renderLearning({ app, state, setState, data, navigate }) {
               </div>
 
               ${beginnerPanel(lesson, state.beginnerMode)}
-              ${textbookPanel(lesson, done)}
+              ${textbookPanel(lesson, done, data.glossaryTerms)}
 
               <div class="lesson-columns">
                 <div>
@@ -268,6 +307,12 @@ export function renderLearning({ app, state, setState, data, navigate }) {
     button.addEventListener("click", () => {
       if (navigate) {
         navigate(button.dataset.nextRoute);
+        const chapterId = button.dataset.nextChapter;
+        if (chapterId) {
+          window.setTimeout(() => {
+            document.querySelector(`[data-lesson-id="${CSS.escape(chapterId)}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          }, 0);
+        }
       }
     });
   });
