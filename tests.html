@@ -27,6 +27,7 @@
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { renderLearning } from "./src/features/learning.js";
+      import { renderGlossary } from "./src/features/glossary.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -203,6 +204,18 @@
             && text.includes(lesson.practiceTasks[1].title)
             && text.includes(glossaryTerms.find((term) => term.id === lesson.relatedTerms[0]).term)
             && !text.includes("六阶段路线");
+        }],
+        ["glossary search renders term details and related chapters", () => {
+          const app = document.createElement("div");
+          renderGlossary({ app, data: { lessons, glossaryTerms } });
+          const input = app.querySelector("[data-glossary-search]");
+          input.value = "range advantage";
+          input.dispatchEvent(new Event("input"));
+          const text = app.textContent;
+          return text.includes("相关章节")
+            && text.includes("范围优势")
+            && text.includes("Range advantage")
+            && text.includes("常见误解");
         }],
         ["preflop ranges cover all six 6-max positions", () => {
           const positions = new Set(preflopRanges.map((item) => item.position));

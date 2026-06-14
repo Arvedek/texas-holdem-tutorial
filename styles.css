@@ -772,6 +772,16 @@ h1 {
   background: rgba(15, 90, 67, 0.12);
 }
 
+.tag-button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.tag-button:hover {
+  background: rgba(15, 90, 67, 0.2);
+}
+
 .training-layout {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
@@ -1003,7 +1013,7 @@ textarea {
 
 .tool-filters {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) 220px;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 220px) minmax(130px, 180px);
   gap: 12px;
 }
 
@@ -1021,6 +1031,13 @@ textarea {
   gap: 12px;
 }
 
+.term-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .term-card h3,
 .range-card h3 {
   margin: 0;
@@ -1031,6 +1048,18 @@ textarea {
   margin: 0;
   color: var(--muted);
   line-height: 1.65;
+}
+
+.related-term-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chapter-result-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .range-head {
