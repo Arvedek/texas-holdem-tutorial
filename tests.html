@@ -21,6 +21,7 @@
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
+      import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js";
       import { glossaryTerms } from "./src/data/glossary.js";
@@ -81,55 +82,102 @@
           const state = markDailyActivity(normalizeState({}), "trainCount", 5, new Date("2026-06-13T00:00:00Z"));
           return getDailyTasks(state, new Date("2026-06-13T00:00:00Z")).train;
         }],
-        ["all lessons include beginner expansion fields", () => {
-          return lessons.every((lesson) => lesson.plainLanguage
-            && lesson.tableExample
-            && lesson.whyItMatters
-            && Array.isArray(lesson.miniChecklist)
-            && lesson.miniChecklist.length >= 3
-            && lesson.encouragement);
+        ["curriculum has 18 textbook chapters", () => lessons.length >= 18],
+        ["curriculum stages are sequential", () => lessons.every((lesson, index) => lesson.stage === index + 1)],
+        ["first five chapters are beginner safe", () => {
+          return lessons.slice(0, 5).every((lesson) => lesson.beginnerSafe === true);
         }],
-        ["first four lessons are beginner safe", () => {
-          return lessons.slice(0, 4).every((lesson) => lesson.beginnerSafe === true);
-        }],
-        ["all lessons include textbook goals", () => {
-          return lessons.every((lesson) => Array.isArray(lesson.goals) && lesson.goals.length >= 2);
-        }],
-        ["all lessons include at least three textbook sections", () => {
-          return lessons.every((lesson) => Array.isArray(lesson.textbook)
-            && lesson.textbook.length >= 3
-            && lesson.textbook.every((section) => section.heading && section.body));
-        }],
-        ["all lessons include worked examples and decision flow", () => {
-          return lessons.every((lesson) => Array.isArray(lesson.examples)
-            && lesson.examples.length >= 1
-            && lesson.examples.every((example) => example.title && example.scenario && example.takeaway)
+        ["all chapters include one-for-all textbook fields", () => {
+          return lessons.every((lesson) => lesson.id
+            && lesson.title
+            && lesson.subtitle
+            && ["beginner", "intermediate", "advanced"].includes(lesson.difficulty)
+            && Number.isFinite(lesson.estimatedMinutes)
+            && lesson.estimatedMinutes >= 8
+            && lesson.summary
+            && lesson.plainLanguage
+            && Array.isArray(lesson.goals)
+            && lesson.goals.length >= 3
+            && Array.isArray(lesson.prerequisites)
+            && Array.isArray(lesson.sections)
+            && lesson.sections.length >= 4
+            && lesson.sections.every((section) => section.heading && section.body && section.keyTakeaway)
+            && Array.isArray(lesson.examples)
+            && lesson.examples.length >= 2
+            && lesson.examples.every((example) => example.title && example.scenario && example.analysis && example.takeaway)
             && Array.isArray(lesson.decisionFlow)
-            && lesson.decisionFlow.length >= 3);
+            && lesson.decisionFlow.length >= 4
+            && Array.isArray(lesson.mistakeDetails)
+            && lesson.mistakeDetails.length >= 3
+            && lesson.mistakeDetails.every((item) => item.mistake && item.whyItHurts && item.betterHabit)
+            && Array.isArray(lesson.checkpoint)
+            && lesson.checkpoint.length >= 2
+            && lesson.checkpoint.length <= 4
+            && Array.isArray(lesson.practiceTasks)
+            && lesson.practiceTasks.length >= 2
+            && lesson.practiceTasks.every((task) => task.title && task.body)
+            && Array.isArray(lesson.relatedTerms)
+            && lesson.relatedTerms.length >= 5);
         }],
-        ["all lessons include mistake details", () => {
-          return lessons.every((lesson) => Array.isArray(lesson.mistakeDetails)
-            && lesson.mistakeDetails.length >= 2
-            && lesson.mistakeDetails.every((item) => item.mistake && item.whyItHurts));
+        ["chapter prerequisites only point backward or to glossary terms", () => {
+          const chapterIndex = new Map(lessons.map((lesson, index) => [lesson.id, index]));
+          const termIds = new Set(glossaryTerms.map((term) => term.id));
+          return lessons.every((lesson, index) => {
+            return lesson.prerequisites.every((item) => {
+              if (termIds.has(item)) return true;
+              return chapterIndex.has(item) && chapterIndex.get(item) < index;
+            });
+          });
+        }],
+        ["all related chapter terms exist in glossary", () => {
+          const termIds = new Set(glossaryTerms.map((term) => term.id));
+          return lessons.every((lesson) => lesson.relatedTerms.every((termId) => termIds.has(termId)));
         }],
         ["all lesson quizzes have three answerable questions", () => {
           return lessons.every((lesson) => Array.isArray(lesson.quiz)
-            && lesson.quiz.length === 3
+            && lesson.quiz.length >= 3
             && lesson.quiz.every((item) => item.question
               && Array.isArray(item.options)
               && item.options.length >= 2
               && item.options.includes(item.answer)
               && item.explanation));
         }],
-        ["all lessons include next step actions", () => {
+        ["all lessons include valid next step actions", () => {
           const validRoutes = new Set(["learning", "ranges", "glossary", "training", "mistakes", "review", "resources"]);
           return lessons.every((lesson) => Array.isArray(lesson.nextSteps)
             && lesson.nextSteps.length >= 1
-            && lesson.nextSteps.every((step) => step.label && validRoutes.has(step.route)));
+            && lesson.nextSteps.every((step) => step.label && (validRoutes.has(step.route) || step.chapterId)));
         }],
-        ["glossary includes at least 16 beginner terms", () => {
-          return glossaryTerms.length >= 16
-            && glossaryTerms.every((item) => item.term && item.category && item.simple && item.example);
+        ["glossary includes at least 120 structured terms", () => {
+          return glossaryTerms.length >= 120
+            && glossaryTerms.every((item) => item.id
+              && item.term
+              && item.english
+              && Array.isArray(item.aliases)
+              && item.category
+              && ["beginner", "intermediate", "advanced"].includes(item.difficulty)
+              && item.definition
+              && item.simple
+              && item.example
+              && item.misunderstanding
+              && Array.isArray(item.relatedTerms));
+        }],
+        ["glossary includes essential specialized vocabulary", () => {
+          const searchable = glossaryTerms.map((term) => [
+            term.id,
+            term.term,
+            term.english,
+            term.abbreviation,
+            ...(term.aliases || [])
+          ].join(" ").toLowerCase()).join(" ");
+          return ["c-bet", "donk bet", "probe bet", "range advantage", "nut advantage", "equity realization", "mdf", "icm", "tilt", "aks", "aqo", "pocket pair", "bb", "effective stack", "board texture"]
+            .every((needle) => searchable.includes(needle));
+        }],
+        ["search finds both chapters and terms for core queries", () => {
+          return ["SPR", "limp", "range advantage", "turn barrel", "MDF", "ICM", "tilt"].every((query) => {
+            const result = searchContent(query, lessons, glossaryTerms);
+            return result.terms.length >= 1 && result.chapters.length >= 1;
+          });
         }],
         ["preflop ranges cover all six 6-max positions", () => {
           const positions = new Set(preflopRanges.map((item) => item.position));
