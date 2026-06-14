@@ -246,6 +246,8 @@
         }],
         ["preflop ranges cover common 6-max to 9-max table sizes", () => {
           const required = {
+            "4-max": ["CO", "BTN", "SB", "BB"],
+            "5-max": ["HJ", "CO", "BTN", "SB", "BB"],
             "6-max": ["UTG", "HJ", "CO", "BTN", "SB", "BB"],
             "7-max": ["UTG", "LJ", "HJ", "CO", "BTN", "SB", "BB"],
             "8-max": ["UTG", "UTG+1", "LJ", "HJ", "CO", "BTN", "SB", "BB"],
@@ -260,9 +262,9 @@
           const app = document.createElement("div");
           renderRanges({ app, data: { preflopRanges } });
           const text = app.textContent;
-          return ["6-max", "7-max", "8-max", "9-max"].every((label) => text.includes(label))
+          return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => text.includes(label))
             && text.includes("常见桌型")
-            && app.querySelectorAll("[data-range-table-size]").length === 4;
+            && app.querySelectorAll("[data-range-table-size]").length === 6;
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

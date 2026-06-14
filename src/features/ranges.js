@@ -19,7 +19,7 @@ export function renderRanges({ app, data }) {
       <div>
         <p class="eyebrow">Preflop Ranges</p>
         <h2>常见桌型翻前范围速查</h2>
-        <p class="muted">支持 6-max、7-max、8-max 和 9-max。人数越多，早位后面等待行动的人越多，默认范围越要收紧。</p>
+        <p class="muted">支持 4-max、5-max、6-max、7-max、8-max 和 9-max。人数越多，早位后面等待行动的人越多，默认范围越要收紧；人数越少，盲注压力越高，后位争夺越频繁。</p>
       </div>
       <div class="range-table-switch" role="tablist" aria-label="选择桌型">
         ${tableSizes.map((tableSize) => `

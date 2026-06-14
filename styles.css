@@ -1026,9 +1026,9 @@ textarea {
 
 .range-table-switch {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
   gap: 8px;
-  min-width: min(420px, 100%);
+  min-width: min(520px, 100%);
 }
 
 .range-table-switch .chip-button {
