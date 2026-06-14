@@ -39,6 +39,14 @@ function task(title, body) {
   return { title, body };
 }
 
+function nextChapter(label, chapterIndex, note) {
+  return { label, route: "learning", chapterId: chapterIds[chapterIndex], note };
+}
+
+function nextRoute(label, route, note) {
+  return { label, route, note };
+}
+
 function chapter(data) {
   const sections = data.sections;
   return {
@@ -80,7 +88,7 @@ export const curriculumChapters = [
       sec("行动词", "check 是过牌，bet 是无人下注时下注，raise 是面对下注再加注，call 是跟注，fold 是弃牌。记录行动顺序时要保留位置。", "行动词告诉你范围怎样变化。")
     ],
     examples: [
-      ex("AKs 与 AQo", "你看到资料写 CO open AKs+, AQo+。", "AKs 是 AK 同花，AQo 是 AQ 非同花；加号表示包含更强的同类牌。读错一个字母，范围理解就会偏很多。", "范围表先读记号，再看位置。"),
+      ex("AQs 与 AQo", "你看到资料写 CO open AQs+, AQo+。", "AQs 是 AQ 同花，AQo 是 AQ 非同花；加号表示包含更强的同类牌。读错一个字母，范围理解就会偏很多。", "范围表先读记号，再看位置。"),
       ex("2.5BB 开池", "盲注 1/2 的现金桌，BTN 加注到 5。", "大盲是 2，所以加注到 5 等于 2.5BB。换成 BB 后，你可以和其他级别的标准开池尺度比较。", "筹码金额要翻译成 BB 才有策略意义。")
     ],
     decisionFlow: [
@@ -105,7 +113,7 @@ export const curriculumChapters = [
       task("BB 记录", "把最近看到的 5 个下注金额换算成 BB。")
     ],
     relatedTerms: ["aks", "aqo", "suited", "offsuit", "pocket-pair", "bb", "call", "fold"],
-    nextSteps: [{ label: "学习规则与摊牌", chapterId: chapterIds[1] }]
+    nextSteps: [nextChapter("学习规则与摊牌", 1, "继续第 2 章，先把摊牌和牌型比较打牢。")]
   }),
   chapter({
     id: chapterIds[1],
@@ -135,7 +143,7 @@ export const curriculumChapters = [
     ],
     examples: [
       ex("踢脚决定输赢", "你拿 AK，对手拿 AQ，公共牌 A 9 4 2 7。", "双方都是一对 A，但你的五张是 AAK97，对手是 AAQ97，你用 K 踢脚获胜。", "同样顶对也要比较踢脚。"),
-      ex("两对被反制", "你拿 65，公共牌 6 5 K K A。", "翻牌两对看似强，但河牌后你的最佳五张是 KKAA6；对手任意 A 都可能和你不同结果，原先的 65 两对价值被压低。", "公共牌大对子会 counterfeit 小两对。")
+      ex("两对被反制", "你拿 65，公共牌 6 5 K K A。", "翻牌两对看似强，但河牌后你的最佳五张是 KK66A：公共牌的一对 K、你的 6，以及 A 踢脚。对手只要有任意 A，就能组成 KKAA6，用 K 和 A 的两对压过你；原先 6 和 5 的小两对被公共牌覆盖。", "公共牌大对子会 counterfeit 小两对。")
     ],
     decisionFlow: [
       "第一步：列出自己的最佳五张。",
@@ -159,7 +167,7 @@ export const curriculumChapters = [
       task("边池口算", "设计三名玩家不同筹码全下的场景，拆出主池和边池。")
     ],
     relatedTerms: ["showdown", "kicker", "chop-pot", "side-pot", "counterfeit", "flop", "turn", "river"],
-    nextSteps: [{ label: "学习位置与行动顺序", chapterId: chapterIds[2] }]
+    nextSteps: [nextChapter("学习位置与行动顺序", 2, "继续第 3 章，把位置、盲注和行动顺序连成一张桌面地图。")]
   }),
   chapter({
     id: chapterIds[2],
@@ -213,7 +221,7 @@ export const curriculumChapters = [
       task("桌型比较", "写出同一手 KJo 在 6-max UTG 和 full-ring UTG 的差异。")
     ],
     relatedTerms: ["position", "utg", "hj", "co", "btn", "sb", "button", "small-blind", "big-blind"],
-    nextSteps: [{ label: "学习起手牌与范围", chapterId: chapterIds[3] }]
+    nextSteps: [nextChapter("学习起手牌与范围", 3, "继续第 4 章，从单手牌好坏过渡到范围思维。")]
   }),
   chapter({
     id: chapterIds[3],
@@ -267,7 +275,7 @@ export const curriculumChapters = [
       task("范围描述", "写出 BTN 开池可能包含的 10 类手牌。")
     ],
     relatedTerms: ["aks", "aqo", "pocket-pair", "range", "combo", "broadway", "connector", "suited", "offsuit"],
-    nextSteps: [{ label: "学习开池与跟弃", chapterId: chapterIds[4] }]
+    nextSteps: [nextChapter("学习开池与跟弃", 4, "继续第 5 章，建立翻前 open、call、fold 的第一套纪律。")]
   }),
   chapter({
     id: chapterIds[4],
@@ -321,7 +329,7 @@ export const curriculumChapters = [
       task("尺度练习", "给 1、2、3 个 limper 设计你的隔离加注尺度。")
     ],
     relatedTerms: ["open-raise", "limp", "isolate", "call", "fold", "bet-sizing", "range", "bb"],
-    nextSteps: [{ label: "学习 3-bet 与 squeeze", chapterId: chapterIds[5] }]
+    nextSteps: [nextChapter("学习 3-bet 与 squeeze", 5, "继续第 6 章，理解翻前压力升级后的范围变化。")]
   }),
   chapter({
     id: chapterIds[5],
@@ -375,7 +383,7 @@ export const curriculumChapters = [
       task("预案表", "为 BTN vs CO 的 3-bet 写出价值、诈唬和面对 4-bet 的处理。")
     ],
     relatedTerms: ["three-bet", "four-bet", "squeeze", "cold-call", "flat-call", "range", "combo", "bet-sizing"],
-    nextSteps: [{ label: "学习盲位防守", chapterId: chapterIds[6] }]
+    nextSteps: [nextChapter("学习盲位防守", 6, "继续第 7 章，把偷盲、防守价格和抽水影响放在一起看。")]
   }),
   chapter({
     id: chapterIds[6],
@@ -429,7 +437,7 @@ export const curriculumChapters = [
       task("防守筛选", "列出 10 手你愿意 BB 防守 BTN 小开的手牌，并写理由。")
     ],
     relatedTerms: ["steal", "blind-defense", "big-blind", "small-blind", "pot-odds", "rake", "equity-realization"],
-    nextSteps: [{ label: "学习牌面结构", chapterId: chapterIds[7] }]
+    nextSteps: [nextChapter("学习牌面结构", 7, "继续第 8 章，学习用干湿、成对和连接性读翻牌。")]
   }),
   chapter({
     id: chapterIds[7],
@@ -483,7 +491,7 @@ export const curriculumChapters = [
       task("转牌计划", "选择 3 个动态翻牌，写出好转牌和坏转牌。")
     ],
     relatedTerms: ["board-texture", "dry-board", "wet-board", "paired-board", "monotone-board", "rainbow-board", "connected-board", "dynamic-board"],
-    nextSteps: [{ label: "学习相对牌力", chapterId: chapterIds[8] }]
+    nextSteps: [nextChapter("学习相对牌力", 8, "继续第 9 章，把牌名放回具体牌面和行动线里判断。")]
   }),
   chapter({
     id: chapterIds[8],
@@ -537,7 +545,7 @@ export const curriculumChapters = [
       task("相对调整", "选 3 个顶对场景，说明在哪些行动后会降级。")
     ],
     relatedTerms: ["top-pair", "overpair", "two-pair", "set", "trips", "draw", "showdown-value", "board-texture"],
-    nextSteps: [{ label: "学习下注目的", chapterId: chapterIds[9] }]
+    nextSteps: [nextChapter("学习下注目的", 9, "继续第 10 章，给每一次下注写清楚价值、诈唬或保护目标。")]
   }),
   chapter({
     id: chapterIds[9],
@@ -591,7 +599,7 @@ export const curriculumChapters = [
       task("尺度选择", "为 5 个不同牌面选择 1/3、1/2 或 2/3 pot，并写理由。")
     ],
     relatedTerms: ["value-bet", "bluff", "semi-bluff", "protection-bet", "bet-sizing", "showdown-value", "board-texture"],
-    nextSteps: [{ label: "学习 c-bet 等翻后线", chapterId: chapterIds[10] }]
+    nextSteps: [nextChapter("学习 c-bet 等翻后线", 10, "继续第 11 章，理解主动权、持续下注和反主动线路。")]
   }),
   chapter({
     id: chapterIds[10],
@@ -645,7 +653,7 @@ export const curriculumChapters = [
       task("延迟计划", "找 3 个不适合翻牌 c-bet 的牌面，写转牌 delayed c-bet 条件。")
     ],
     relatedTerms: ["c-bet", "delayed-c-bet", "probe-bet", "donk-bet", "check-raise", "initiative", "semi-bluff"],
-    nextSteps: [{ label: "学习权益与赔率", chapterId: chapterIds[11] }]
+    nextSteps: [nextChapter("学习权益与赔率", 11, "继续第 12 章，用 outs、赔率和权益实现给跟注决策定价。")]
   }),
   chapter({
     id: chapterIds[11],
@@ -699,7 +707,7 @@ export const curriculumChapters = [
       task("outs 清洗", "给 5 个听牌场景标出干净 outs 和脏 outs。")
     ],
     relatedTerms: ["equity", "outs", "pot-odds", "implied-odds", "reverse-implied-odds", "fold-equity", "equity-realization", "draw"],
-    nextSteps: [{ label: "学习 SPR 与承诺", chapterId: chapterIds[12] }]
+    nextSteps: [nextChapter("学习 SPR 与承诺", 12, "继续第 13 章，用有效筹码和 SPR 规划底池能走多远。")]
   }),
   chapter({
     id: chapterIds[12],
@@ -753,7 +761,7 @@ export const curriculumChapters = [
       task("承诺判断", "为 5 个顶对场景写出是否愿意打到全下。")
     ],
     relatedTerms: ["spr", "effective-stack", "commitment", "all-in", "top-pair", "overpair", "bet-sizing"],
-    nextSteps: [{ label: "学习转河计划", chapterId: chapterIds[13] }]
+    nextSteps: [nextChapter("学习转河计划", 13, "继续第 14 章，把翻牌决定延伸到转牌和河牌计划。")]
   }),
   chapter({
     id: chapterIds[13],
@@ -807,7 +815,7 @@ export const curriculumChapters = [
       task("河牌纪律", "写 3 个你过去想 hero call 的场景，并列出实际能击败的诈唬。")
     ],
     relatedTerms: ["barrel", "pot-control", "thin-value", "bluff-catch", "blocker", "river", "turn", "showdown-value"],
-    nextSteps: [{ label: "学习对手类型", chapterId: chapterIds[14] }]
+    nextSteps: [nextChapter("学习对手类型", 14, "继续第 15 章，学习根据对手类型和群体倾向做剥削调整。")]
   }),
   chapter({
     id: chapterIds[14],
@@ -861,7 +869,7 @@ export const curriculumChapters = [
       task("剥削计划", "为 calling station、nit、maniac 各写一个调整。")
     ],
     relatedTerms: ["opponent-type", "calling-station", "nit", "maniac", "regular", "population-tendency", "exploit", "vpip", "pfr"],
-    nextSteps: [{ label: "学习 GTO 基础", chapterId: chapterIds[15] }]
+    nextSteps: [nextChapter("学习 GTO 基础", 15, "继续第 16 章，把范围优势、坚果优势和平衡作为理论基准。")]
   }),
   chapter({
     id: chapterIds[15],
@@ -915,7 +923,7 @@ export const curriculumChapters = [
       task("理论转执行", "选一个 solver 建议，把它翻译成一句牌桌可执行规则。")
     ],
     relatedTerms: ["gto", "balance", "range-advantage", "nut-advantage", "mdf", "solver", "exploit"],
-    nextSteps: [{ label: "学习赛制与资金管理", chapterId: chapterIds[16] }]
+    nextSteps: [nextChapter("学习赛制与资金管理", 16, "继续第 17 章，把赛制、资金管理和心态纪律纳入长期框架。")]
   }),
   chapter({
     id: chapterIds[16],
@@ -969,7 +977,7 @@ export const curriculumChapters = [
       task("心态日志", "记录三次情绪波动前的触发点和当时错误冲动。")
     ],
     relatedTerms: ["cash-game", "tournament", "icm", "ante", "bankroll", "buy-in", "variance", "downswing", "tilt", "stop-loss"],
-    nextSteps: [{ label: "建立复盘习惯", chapterId: chapterIds[17] }]
+    nextSteps: [nextChapter("建立复盘习惯", 17, "继续第 18 章，把手牌记录、错误标签和每周学习计划串起来。")]
   }),
   chapter({
     id: chapterIds[17],
@@ -1024,8 +1032,8 @@ export const curriculumChapters = [
     ],
     relatedTerms: ["hand-history", "mistake-tag", "study-routine", "range", "barrel", "bluff-catch", "solver", "tilt"],
     nextSteps: [
-      { label: "打开复盘工具", route: "review" },
-      { label: "回到学习路径", route: "learning" }
+      nextRoute("打开复盘工具", "review", "进入复盘页，按逐街问题记录并标记最近的一手牌。"),
+      nextRoute("回到学习路径", "learning", "回到学习列表，按章节顺序查漏补缺并安排下一轮复习。")
     ]
   })
 ];
