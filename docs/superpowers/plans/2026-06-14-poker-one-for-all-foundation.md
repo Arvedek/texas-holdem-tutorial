@@ -186,7 +186,7 @@ In `tests.html`, replace the old tests named:
 with these tests:
 
 ```js
-["curriculum has 18 textbook chapters", () => lessons.length >= 18],
+["curriculum has 18 textbook chapters", () => lessons.length === 18],
 ["curriculum stages are sequential", () => lessons.every((lesson, index) => lesson.stage === index + 1)],
 ["first five chapters are beginner safe", () => {
   return lessons.slice(0, 5).every((lesson) => lesson.beginnerSafe === true);
@@ -239,7 +239,7 @@ with these tests:
 }],
 ["all lesson quizzes have three answerable questions", () => {
   return lessons.every((lesson) => Array.isArray(lesson.quiz)
-    && lesson.quiz.length >= 3
+    && lesson.quiz.length === 3
     && lesson.quiz.every((item) => item.question
       && Array.isArray(item.options)
       && item.options.length >= 2
