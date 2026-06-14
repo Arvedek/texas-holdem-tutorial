@@ -1024,6 +1024,17 @@ textarea {
   gap: 14px;
 }
 
+.range-table-switch {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  min-width: min(420px, 100%);
+}
+
+.range-table-switch .chip-button {
+  text-align: center;
+}
+
 .term-card,
 .range-card {
   display: grid;

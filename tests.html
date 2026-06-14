@@ -28,6 +28,7 @@
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { renderLearning } from "./src/features/learning.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
+      import { renderRanges } from "./src/features/ranges.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -243,9 +244,25 @@
           setGlossarySearch("");
           return input.value === "SPR" && text.includes("相关章节") && text.includes("SPR");
         }],
-        ["preflop ranges cover all six 6-max positions", () => {
-          const positions = new Set(preflopRanges.map((item) => item.position));
-          return ["UTG", "HJ", "CO", "BTN", "SB", "BB"].every((position) => positions.has(position));
+        ["preflop ranges cover common 6-max to 9-max table sizes", () => {
+          const required = {
+            "6-max": ["UTG", "HJ", "CO", "BTN", "SB", "BB"],
+            "7-max": ["UTG", "LJ", "HJ", "CO", "BTN", "SB", "BB"],
+            "8-max": ["UTG", "UTG+1", "LJ", "HJ", "CO", "BTN", "SB", "BB"],
+            "9-max": ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"]
+          };
+          return Object.entries(required).every(([tableSize, positions]) => {
+            const available = new Set(preflopRanges.filter((item) => item.tableSize === tableSize).map((item) => item.position));
+            return positions.every((position) => available.has(position));
+          });
+        }],
+        ["range page renders table-size controls", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          const text = app.textContent;
+          return ["6-max", "7-max", "8-max", "9-max"].every((label) => text.includes(label))
+            && text.includes("常见桌型")
+            && app.querySelectorAll("[data-range-table-size]").length === 4;
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

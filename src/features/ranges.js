@@ -1,4 +1,6 @@
-import { escapeHtml } from "../lib/sanitize.js";
+import { escapeAttribute, escapeHtml } from "../lib/sanitize.js";
+
+let selectedTableSize = "6-max";
 
 function chips(items) {
   return (items || []).map((item) => `<span class="range-chip">${escapeHtml(item)}</span>`).join("");
@@ -6,18 +8,36 @@ function chips(items) {
 
 export function renderRanges({ app, data }) {
   const ranges = data.preflopRanges || [];
+  const tableSizes = [...new Set(ranges.map((item) => item.tableSize))];
+  const activeTableSize = tableSizes.includes(selectedTableSize) ? selectedTableSize : tableSizes[0];
+  selectedTableSize = activeTableSize;
+  const visibleRanges = ranges.filter((item) => item.tableSize === activeTableSize);
+  const positionCount = visibleRanges.length;
 
   app.innerHTML = `
     <section class="panel section-intro">
       <div>
         <p class="eyebrow">Preflop Ranges</p>
-        <h2>6-max 翻前范围速查</h2>
-        <p class="muted">这是新人默认表，不是死规则。先用它减少翻前大错，再根据桌况和对手慢慢调整。</p>
+        <h2>常见桌型翻前范围速查</h2>
+        <p class="muted">支持 6-max、7-max、8-max 和 9-max。人数越多，早位后面等待行动的人越多，默认范围越要收紧。</p>
       </div>
+      <div class="range-table-switch" role="tablist" aria-label="选择桌型">
+        ${tableSizes.map((tableSize) => `
+          <button
+            class="chip-button ${tableSize === activeTableSize ? "is-active" : ""}"
+            data-range-table-size="${escapeAttribute(tableSize)}"
+            role="tab"
+            aria-selected="${tableSize === activeTableSize ? "true" : "false"}"
+          >
+            ${escapeHtml(tableSize)}
+          </button>
+        `).join("")}
+      </div>
+      <p class="muted">当前显示 ${escapeHtml(activeTableSize)}，共 ${positionCount} 个位置。这里是新人默认参考，不是死表；先减少翻前大错，再根据桌况、抽水和对手调整。</p>
     </section>
 
     <section class="range-grid">
-      ${ranges.map((item) => `
+      ${visibleRanges.map((item) => `
         <article class="card range-card">
           <div class="range-head">
             <strong>${escapeHtml(item.position)}</strong>
@@ -37,4 +57,11 @@ export function renderRanges({ app, data }) {
       `).join("")}
     </section>
   `;
+
+  app.querySelectorAll("[data-range-table-size]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedTableSize = button.dataset.rangeTableSize;
+      renderRanges({ app, data });
+    });
+  });
 }
