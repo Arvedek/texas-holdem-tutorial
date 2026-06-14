@@ -17,6 +17,12 @@ function termLabel(termId, termsById) {
   return termsById.get(termId)?.term || termId;
 }
 
+export function setGlossarySearch(value) {
+  search = String(value || "");
+  category = "全部";
+  difficulty = "全部";
+}
+
 export function renderGlossary({ app, data }) {
   const lessons = data.lessons || [];
   const terms = data.glossaryTerms || [];

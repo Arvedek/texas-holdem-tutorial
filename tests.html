@@ -27,7 +27,7 @@
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { renderLearning } from "./src/features/learning.js";
-      import { renderGlossary } from "./src/features/glossary.js";
+      import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -207,6 +207,7 @@
         }],
         ["glossary search renders term details and related chapters", () => {
           const app = document.createElement("div");
+          setGlossarySearch("");
           renderGlossary({ app, data: { lessons, glossaryTerms } });
           const input = app.querySelector("[data-glossary-search]");
           input.value = "range advantage";
@@ -216,6 +217,31 @@
             && text.includes("范围优势")
             && text.includes("Range advantage")
             && text.includes("常见误解");
+        }],
+        ["learning related terms open glossary search", () => {
+          const app = document.createElement("div");
+          let target = "";
+          renderLearning({
+            app,
+            state: normalizeState({ beginnerMode: true }),
+            setState: () => {},
+            data: { lessons, glossaryTerms },
+            navigate: () => {},
+            openGlossarySearch: (query) => {
+              target = query;
+            }
+          });
+          app.querySelector("[data-lesson-term-search]").click();
+          return target === glossaryTerms.find((term) => term.id === lessons[0].relatedTerms[0]).term;
+        }],
+        ["glossary can receive an external search query", () => {
+          const app = document.createElement("div");
+          setGlossarySearch("SPR");
+          renderGlossary({ app, data: { lessons, glossaryTerms } });
+          const text = app.textContent;
+          const input = app.querySelector("[data-glossary-search]");
+          setGlossarySearch("");
+          return input.value === "SPR" && text.includes("相关章节") && text.includes("SPR");
         }],
         ["preflop ranges cover all six 6-max positions", () => {
           const positions = new Set(preflopRanges.map((item) => item.position));

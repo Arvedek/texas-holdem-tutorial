@@ -12,7 +12,7 @@ import { renderTraining } from "./features/training.js";
 import { renderMistakes } from "./features/mistakes.js";
 import { renderReview } from "./features/review.js";
 import { renderResources } from "./features/resources.js";
-import { renderGlossary } from "./features/glossary.js";
+import { renderGlossary, setGlossarySearch } from "./features/glossary.js";
 import { renderRanges } from "./features/ranges.js";
 
 const app = document.querySelector("#app");
@@ -70,6 +70,7 @@ function getContext() {
     setState,
     trainingTargetQuestionId,
     openTrainingQuestion,
+    openGlossarySearch,
     data: {
       lessons,
       drills,
@@ -84,6 +85,11 @@ function getContext() {
 function openTrainingQuestion(questionId) {
   trainingTargetQuestionId = questionId;
   setRoute("training");
+}
+
+function openGlossarySearch(query) {
+  setGlossarySearch(query);
+  setRoute("glossary");
 }
 
 function setRoute(route) {

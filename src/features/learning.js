@@ -79,7 +79,12 @@ function renderRelatedTerms(lesson, glossaryTerms) {
   const termsById = new Map((glossaryTerms || []).map((term) => [term.id, term]));
   return (lesson.relatedTerms || []).map((termId) => {
     const term = termsById.get(termId);
-    return `<span class="tag is-soft">${escapeHtml(term ? term.term : termId)}</span>`;
+    const label = term ? term.term : termId;
+    return `
+      <button class="tag is-soft tag-button" data-lesson-term-search="${escapeAttribute(label)}">
+        ${escapeHtml(label)}
+      </button>
+    `;
   }).join("");
 }
 
@@ -197,7 +202,7 @@ function textbookPanel(lesson, completed, glossaryTerms) {
   `;
 }
 
-export function renderLearning({ app, state, setState, data, navigate }) {
+export function renderLearning({ app, state, setState, data, navigate, openGlossarySearch }) {
   const completed = new Set(state.completedLessons);
   const completionRate = Math.round((completed.size / data.lessons.length) * 100);
 
@@ -299,7 +304,20 @@ export function renderLearning({ app, state, setState, data, navigate }) {
         ...quizSelections,
         [key]: button.dataset.quizAnswer
       };
-      renderLearning({ app, state, setState, data, navigate });
+      renderLearning({ app, state, setState, data, navigate, openGlossarySearch });
+    });
+  });
+
+  app.querySelectorAll("[data-lesson-term-search]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (openGlossarySearch) {
+        openGlossarySearch(button.dataset.lessonTermSearch);
+        return;
+      }
+
+      if (navigate) {
+        navigate("glossary");
+      }
     });
   });
 
