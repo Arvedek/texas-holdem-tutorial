@@ -251,7 +251,11 @@ with these tests:
   const lessonIds = new Set(lessons.map((lesson) => lesson.id));
   return lessons.every((lesson) => Array.isArray(lesson.nextSteps)
     && lesson.nextSteps.length >= 1
-    && lesson.nextSteps.every((step) => step.label && (validRoutes.has(step.route) || lessonIds.has(step.chapterId))));
+    && lesson.nextSteps.every((step) => {
+      const routeOk = !step.route || validRoutes.has(step.route);
+      const chapterOk = !step.chapterId || lessonIds.has(step.chapterId);
+      return step.label && routeOk && chapterOk && (step.route || step.chapterId);
+    }));
 }],
 ["glossary includes at least 120 structured terms", () => {
   return glossaryTerms.length >= 120
