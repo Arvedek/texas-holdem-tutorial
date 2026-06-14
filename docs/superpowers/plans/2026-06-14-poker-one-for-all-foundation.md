@@ -19,7 +19,7 @@ The implementation must satisfy these non-negotiable content requirements:
 - 18 curriculum chapters.
 - First 5 chapters marked beginner safe.
 - Every chapter has `subtitle`, `difficulty`, `estimatedMinutes`, `prerequisites`, `sections`, `examples`, `decisionFlow`, `mistakeDetails`, `checkpoint`, `quiz`, `practiceTasks`, `relatedTerms`, and `nextSteps`.
-- Every chapter has at least 4 sections, 2 examples, 4 decision steps, 3 mistake details, 2 checkpoint items, 3 quiz questions, 2 practice tasks, 5 related terms, and 1 next step.
+- Every chapter has at least 4 sections, 2 examples, 4 decision steps, 3 mistake details, 2 checkpoint items, exactly 3 quiz questions, 2 practice tasks, 5 related terms, and 1 next step.
 - Glossary has at least 120 terms.
 - Glossary covers notation, rules, preflop, postflop, math, GTO, exploitative play, review, bankroll, online poker, and tournament concepts.
 - Search finds both chapters and terms for queries such as `SPR`, `limp`, `range advantage`, `turn barrel`, `MDF`, `ICM`, and `tilt`.
