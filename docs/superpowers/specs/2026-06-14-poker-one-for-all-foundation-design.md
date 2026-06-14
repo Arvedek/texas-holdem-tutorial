@@ -23,7 +23,7 @@ The tool should reduce the need to search random articles, YouTube comments, for
 
 ### In Scope
 
-- Replace the current six-course path with a larger textbook-style curriculum of 14 to 16 chapters.
+- Replace the current six-course path with a larger textbook-style curriculum of 18 chapters.
 - Add chapter metadata for difficulty, estimated time, prerequisites, learning outcomes, related terms, and related drills.
 - Expand each chapter into a repeatable textbook structure:
   - chapter overview
@@ -67,24 +67,62 @@ The tool should reduce the need to search random articles, YouTube comments, for
 
 The curriculum should become a textbook table of contents. The first version should cover these chapters:
 
-1. Rules, hand rankings, showdown logic, and kickers
-2. Table positions, blinds, action order, and information advantage
-3. Starting hands, preflop discipline, and range thinking
-4. Open-raising, limping, isolation, calling, and folding
-5. 3-bet, 4-bet, squeeze, and preflop pressure
-6. Board texture: dry, wet, paired, monotone, connected, and high-card boards
-7. Value betting, bluffing, protection, and bet purpose
-8. Continuation betting, delayed c-bet, probe bet, donk bet, and check-raise
-9. Equity, outs, pot odds, implied odds, reverse implied odds, and fold equity
-10. SPR, stack depth, commitment, and all-in planning
-11. Turn and river planning: barreling, pot control, thin value, and bluff-catching
-12. Opponent types, population tendencies, and exploitative adjustments
-13. GTO basics, balance, blockers, range advantage, nut advantage, and MDF
-14. Bankroll management, variance, tilt, and session discipline
-15. Hand review method: reconstructing ranges, street-by-street decisions, and mistake tags
-16. Study routine: how to combine lessons, drills, glossary, and review into a weekly plan
+1. Table language: card notation, suits, ranks, blinds, button, stack, pot, BB units, and common action words
+2. Rules, hand rankings, showdown logic, kickers, chops, side pots, and counterfeit hands
+3. Table positions, blinds, action order, information advantage, and 6-max versus full-ring differences
+4. Starting hands, hand notation, suited versus offsuit, pairs, broadways, connectors, and range thinking
+5. Open-raising, limping, isolation, calling, folding, and beginner preflop sizing
+6. 3-bet, 4-bet, squeeze, cold call, flat call, and preflop pressure
+7. Blind defense, steal attempts, small blind leaks, big blind pot odds, and rake awareness
+8. Board texture: dry, wet, paired, monotone, rainbow, connected, low, high-card, and dynamic boards
+9. Relative hand strength: top pair, overpair, two pair, set, trips, made hands, draws, and showdown value
+10. Value betting, bluffing, protection, bet purpose, and beginner bet sizing
+11. Continuation betting, delayed c-bet, probe bet, donk bet, check-raise, and initiative
+12. Equity, outs, pot odds, implied odds, reverse implied odds, fold equity, and equity realization
+13. SPR, effective stacks, stack depth, commitment, and all-in planning
+14. Turn and river planning: barreling, pot control, thin value, bluff-catching, blockers, and river discipline
+15. Opponent types, player stats, population tendencies, table selection, and exploitative adjustments
+16. GTO basics, balance, range advantage, nut advantage, MDF, solver output, and when not to overuse theory
+17. Game formats and risk: cash games, tournaments, ICM basics, rake, bankroll, variance, downswing, tilt, and session discipline
+18. Hand review and study routine: reconstructing ranges, street-by-street decisions, mistake tags, weekly plan, and next learning loops
 
-The first four chapters should remain beginner-safe and should avoid advanced jargon unless the term is immediately explained. Later chapters may introduce more technical language, but the glossary must cover it.
+The first five chapters should remain beginner-safe and should avoid advanced jargon unless the term is immediately explained. Later chapters may introduce more technical language, but the glossary must cover it.
+
+## Progression Rules
+
+The curriculum must be deliberately sequential. A learner should not meet a strategic concept before they have the language needed to understand it.
+
+Required progression:
+
+- Chapters 1-2 teach poker language, mechanics, and hand comparison before strategy.
+- Chapters 3-7 teach preflop decisions, because bad preflop choices create most beginner postflop problems.
+- Chapters 8-11 teach flop thinking: board texture, relative hand strength, bet purpose, and common betting lines.
+- Chapters 12-14 teach math, stack planning, and later-street decisions after the learner can already describe hands and boards.
+- Chapters 15-16 teach opponent adjustment and GTO only after ranges, board texture, and bet purpose are established.
+- Chapters 17-18 teach long-term survival, review, and study systems.
+
+Every chapter must list prerequisites. Prerequisites should only point to earlier chapters or glossary terms. If a chapter introduces an advanced term, that term must appear in `relatedTerms` and be defined in the glossary.
+
+Every chapter should include a "before you continue" checkpoint. This checkpoint should be a short list of 2 to 4 concrete skills the learner should be able to perform before moving on.
+
+## Coverage Audit Requirements
+
+The release should pass a content audit across these domains:
+
+- Game mechanics: actions, streets, blinds, showdown, side pots, all-in, split pots, misread hands.
+- Poker notation: `AKs`, `AQo`, pocket pairs, `x`, suited notation, board notation, position abbreviations, BB-based sizing.
+- Preflop fundamentals: opening ranges, limping, isolation, calling, folding, 3-bet, 4-bet, squeeze, blind defense, rake impact.
+- Postflop fundamentals: board texture, relative hand strength, initiative, position, value, bluff, protection, check, bet, raise, check-raise.
+- Math: combos, equity, outs, pot odds, implied odds, reverse implied odds, fold equity, MDF, SPR, effective stack.
+- Bet sizing: small bet, half pot, two-thirds pot, pot-sized bet, overbet, all-in, sizing purpose, beginner defaults.
+- Later streets: turn barrels, river value, thin value, bluff-catching, blockers, missed draws, pot control.
+- Opponent models: tight, loose, passive, aggressive, calling station, nit, maniac, regular, recreational player.
+- Theory: range advantage, nut advantage, polarization, linear range, balance, exploit, solver interpretation.
+- Formats and environment: cash game, tournament, sit-and-go, ante, ICM, rake, rakeback, HUD stats, multi-tabling basics.
+- Risk and mindset: bankroll, buy-in, variance, downswing, tilt, stop loss, session review, study schedule.
+- Review workflow: hand history, positions, effective stack, action line, range notes, mistake tags, next action.
+
+If any domain lacks a chapter section and glossary coverage, the content is incomplete.
 
 ## Chapter Data Model
 
@@ -106,6 +144,7 @@ Required fields:
 - `examples`: at least 2 table examples, each with `title`, `scenario`, `analysis`, and `takeaway`
 - `decisionFlow`: at least 4 ordered decision steps
 - `mistakeDetails`: at least 3 mistake entries, each with `mistake`, `whyItHurts`, and `betterHabit`
+- `checkpoint`: 2 to 4 skills the learner should have before continuing
 - `quiz`: at least 3 answerable questions, each with explanation
 - `practiceTasks`: at least 2 concrete tasks
 - `relatedTerms`: at least 5 glossary term ids
@@ -156,6 +195,15 @@ Example terms that must be included:
 - bankroll, buy-in, variance, downswing, tilt, stop loss
 - ICM, bubble, ante, rake, rakeback
 
+Glossary coverage minimums:
+
+- At least 20 terms for basic rules, actions, positions, and notation.
+- At least 30 terms for preflop, ranges, and hand categories.
+- At least 35 terms for postflop, board texture, hand strength, and bet lines.
+- At least 20 terms for poker math, stack depth, and bet sizing.
+- At least 20 terms for GTO, exploitative play, player types, and review.
+- At least 15 terms for bankroll, mental game, online poker, and tournament concepts.
+
 Glossary search should match term, English name, aliases, definition, explanation, example, and related terms.
 
 ## Search Experience
@@ -193,15 +241,18 @@ Required UI behaviors:
 
 Automated tests should cover:
 
-- At least 14 chapters exist.
+- At least 18 chapters exist.
 - Every chapter has required textbook fields.
-- Every chapter has at least 4 sections, 2 examples, 3 mistakes, 3 quiz questions, and 5 related terms.
-- The first four chapters are beginner-safe.
+- Every chapter has at least 4 sections, 2 examples, 3 mistakes, 1 checkpoint, 3 quiz questions, and 5 related terms.
+- Every chapter's prerequisites only reference earlier chapters or glossary terms.
+- The first five chapters are beginner-safe.
 - Glossary has at least 120 terms.
 - Every glossary entry has required dictionary fields.
 - Glossary includes required key terms such as `c-bet`, `donk bet`, `probe bet`, `range advantage`, `nut advantage`, `equity realization`, `MDF`, `ICM`, and `tilt`.
+- Glossary includes basic notation terms such as `AKs`, `AQo`, `pocket pair`, `BB`, `effective stack`, and `board texture`.
 - Search finds terms by English name, Chinese alias, abbreviation, and explanation text.
 - Search returns both chapters and terms for mixed queries such as `SPR` and `limp`.
+- Coverage audit domains have at least one chapter section and multiple glossary terms.
 - Existing reward, lesson completion, quiz feedback, and local data migration tests still pass.
 
 Manual checks:
