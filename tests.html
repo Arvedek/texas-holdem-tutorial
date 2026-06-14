@@ -122,6 +122,20 @@
             && Array.isArray(lesson.relatedTerms)
             && lesson.relatedTerms.length >= 5);
         }],
+        ["rules chapter teaches complete hand strength order", () => {
+          const chapter = lessons.find((lesson) => lesson.id === "rules-hand-rankings-showdown");
+          const text = JSON.stringify(chapter);
+          return ["皇家同花顺", "同花顺", "四条", "葫芦", "同花", "顺子", "三条", "两对", "一对", "高牌"]
+            .every((name) => text.includes(name));
+        }],
+        ["position chapter explains table sizes and position abbreviations", () => {
+          const chapter = lessons.find((lesson) => lesson.id === "positions-blinds-action-order");
+          const text = JSON.stringify(chapter);
+          return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => text.includes(label))
+            && ["UTG", "HJ", "CO", "BTN", "SB", "BB", "枪口位", "劫位", "关煞位", "按钮位", "小盲", "大盲"].every((label) => text.includes(label))
+            && !text.includes("能说出 6-max 六个位置的行动顺序")
+            && !text.includes("按顺序说出 6-max 位置");
+        }],
         ["chapter prerequisites only point backward or to glossary terms", () => {
           const chapterIndex = new Map(lessons.map((lesson, index) => [lesson.id, index]));
           const termIds = new Set(glossaryTerms.map((term) => term.id));
@@ -180,6 +194,11 @@
           ].join(" ").toLowerCase()).join(" ");
           return ["c-bet", "donk bet", "probe bet", "range advantage", "nut advantage", "equity realization", "mdf", "icm", "tilt", "aks", "aqo", "pocket pair", "bb", "effective stack", "board texture"]
             .every((needle) => searchable.includes(needle));
+        }],
+        ["glossary includes position and table-size vocabulary", () => {
+          const ids = new Set(glossaryTerms.map((term) => term.id));
+          return ["utg", "utg-plus-one", "mp", "lj", "hj", "co", "btn", "sb", "bb", "table-size", "short-handed", "full-ring"]
+            .every((id) => ids.has(id));
         }],
         ["search finds both chapters and terms for core queries", () => {
           return ["SPR", "limp", "range advantage", "turn barrel", "MDF", "ICM", "tilt"].every((query) => {

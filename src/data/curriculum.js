@@ -137,7 +137,7 @@ export const curriculumChapters = [
     prerequisites: [chapterIds[0]],
     sections: [
       sec("七选五规则", "每名玩家用两张手牌和五张公共牌中的任意五张组成最大牌型。手牌可以用两张、一张，甚至一张不用。", "比的是最佳五张，不是手牌本身。"),
-      sec("牌型与踢脚", "同牌型先比主要组成，再比剩余高牌。A 对 K 踢脚能赢 A 对 Q 踢脚；但如果公共牌已经提供更高踢脚，双方可能平分。", "踢脚只在同牌型且需要比较剩余牌时生效。"),
+      sec("牌型强弱顺序", "从强到弱依次是：皇家同花顺、同花顺、四条、葫芦、同花、顺子、三条、两对、一对、高牌。同牌型先比主要组成，再比剩余高牌，也就是 kicker。A 对 K 踢脚能赢 A 对 Q 踢脚。", "先背大类顺序，再学同牌型内部比较。"),
       sec("平分池与边池", "当双方最佳五张完全相同就是 chop pot。多人全下且筹码量不同，会形成 side pot，短筹码只能争夺自己覆盖到的部分。", "先分清谁有资格争夺哪个底池。"),
       sec("Counterfeit", "counterfeit 指公共牌让你原本的优势被抹平。例如你用小对子组成两对，转河又发出更大的公共对子，自己的小对子可能不再参与最佳五张。", "公共牌会改写双方的最佳五张。")
     ],
@@ -177,23 +177,25 @@ export const curriculumChapters = [
     difficulty: "beginner",
     estimatedMinutes: 13,
     beginnerSafe: true,
-    summary: "本章建立 UTG、HJ、CO、BTN、SB、BB 的顺序，以及盲注、信息优势、6-max 与 full-ring 的差异。",
-    plainLanguage: "位置就是你什么时候说话。越晚行动，看到的信息越多；越早行动，后面还有更多人可能醒来拿强牌。",
-    tableExample: "同样 KTs，在 UTG 面对五个未行动玩家很紧张；在 BTN 前面都弃牌时，它可以自然开池偷盲。",
+    summary: "本章建立 4-max 到 9-max 的桌型人数、UTG/HJ/CO/BTN/SB/BB 等位置缩写、盲注和行动顺序。",
+    plainLanguage: "位置就是你什么时候说话。不同桌型会删掉一些早位，但 BTN、SB、BB 永远存在；人数越多，越早的位置越需要谨慎。",
+    tableExample: "同样 KTs，在 9-max UTG 后面还有八个人未行动，很紧张；在 4-max BTN 前面只剩 CO 已弃牌时，它可以自然开池偷盲。",
     whyItMatters: "位置会改变同一手牌的盈利能力。新手如果前位太松、小盲太爱补齐，会长期在信息少的位置打大底池。",
     miniChecklist: ["先确认自己位置", "数清后面还有几人未行动", "小盲位默认更谨慎"],
     encouragement: "学会按位置选牌，你就已经从看牌玩，进入看局面玩。",
     goals: [
-      "能说出 6-max 六个位置的行动顺序",
+      "能解释 4-max、5-max、6-max、7-max、8-max、9-max 的位置数量差异",
+      "能说出 UTG、HJ、CO、BTN、SB、BB 的中文含义",
       "能解释按钮位为什么有信息优势",
-      "能区分 6-max 和 full-ring 的范围松紧"
+      "能根据未行动人数调整前位范围松紧"
     ],
     prerequisites: [chapterIds[1]],
     sections: [
-      sec("位置名称", "6-max 常见顺序是 UTG、HJ、CO、BTN、SB、BB。BTN 翻后通常最后行动，SB 翻后经常最先行动。", "位置名背后是信息差。"),
+      sec("桌型人数", "常见桌型可以是 4-max、5-max、6-max、7-max、8-max、9-max。4-max 只剩 CO、BTN、SB、BB；5-max 多一个 HJ；6-max 常见为 UTG、HJ、CO、BTN、SB、BB；7-max 加 LJ；8-max 加 UTG+1；9-max 再加入 MP。", "先确认人数，再套用位置和范围。"),
+      sec("位置缩写词典", "UTG 是 Under the Gun，中文常叫枪口位，通常是最早行动的位置；HJ 是 Hijack，劫位；CO 是 Cutoff，关煞位；BTN/Button 是按钮位；SB 是 Small Blind，小盲；BB 是 Big Blind，大盲。", "缩写不是黑话装饰，而是行动顺序。"),
       sec("盲注机制", "SB 和 BB 被迫投入筹码，所以他们会得到一定防守价格，但翻后位置差。盲注不是免费筹码，而是长期成本。", "盲位要防守，但不能无条件防守。"),
       sec("行动顺序", "翻前从 UTG 开始，盲位最后行动；翻后从按钮左侧仍在牌局中的玩家开始，按钮位最晚。", "翻前和翻后的先后顺序不完全一样。"),
-      sec("桌型差异", "full-ring 人数更多，前位后面有更多未行动玩家，所以前位范围更紧。6-max 人少，盲注来得更快，后位争夺更频繁。", "人数越多，早位越要收紧。")
+      sec("桌型差异", "人数越多，早位后面有更多未行动玩家，所以前位范围越紧。人数越少，盲注来得越快，CO、BTN、SB、BB 的争夺更频繁。短桌可以更主动，但不是任何两张都玩。", "人数改变的是未行动人数和盲注压力。")
     ],
     examples: [
       ex("按钮位的信息优势", "CO 弃牌，BTN 看到 SB 和 BB 是两个偏紧玩家。", "BTN 可以用更宽范围开池，因为后面只剩两个盲位，并且翻后常有位置优势。", "位置好时边缘牌更容易实现价值。"),
@@ -208,19 +210,19 @@ export const curriculumChapters = [
     mistakeDetails: [
       miss("前位打太多边缘牌", "后面多人未行动，容易撞上强范围并在翻后无位置。", "前位只保留清楚盈利的起手牌。"),
       miss("小盲自动补齐", "小盲翻后位置差，边缘牌很难实现权益。", "补齐前问自己翻后击中什么才舒服。"),
-      miss("忽略桌型人数", "full-ring 前位比 6-max 前位压力更大，照搬范围会过松。", "先确认桌型再套用范围。")
+      miss("忽略桌型人数", "9-max 前位比短桌前位压力更大，照搬短桌范围会过松；4-max 又不能照搬满员桌的紧度。", "先确认桌型，再看自己位置和后面未行动人数。")
     ],
-    checkpoint: ["按顺序说出 6-max 位置", "解释按钮位优势", "指出小盲位漏洞"],
+    checkpoint: ["解释 4-max 到 9-max 的人数差异", "说出 UTG/HJ/CO/BTN/SB/BB 含义", "指出小盲位漏洞"],
     quiz: [
-      q("6-max 中通常信息优势最大的位置是？", ["BTN", "UTG", "SB"], "BTN", "BTN 翻后通常最后行动。"),
+      q("通常信息优势最大的位置是？", ["BTN", "UTG", "SB"], "BTN", "BTN 翻后通常最后行动。"),
       q("小盲位为什么不能随便补齐？", ["翻后位置差", "已经投入半盲所以必玩", "小盲永远最大"], "翻后位置差", "小盲翻后经常先行动，信息少。"),
-      q("full-ring 前位通常比 6-max 前位怎样？", ["更紧", "更松", "完全一样"], "更紧", "人数更多，后面醒来强牌的人更多。")
+      q("9-max 早位通常比 4-max 早位怎样？", ["更紧", "更松", "完全一样"], "更紧", "人数更多，后面醒来强牌的人更多。")
     ],
     practiceTasks: [
-      task("位置标注", "找 10 手牌局记录，给每个玩家标 UTG/HJ/CO/BTN/SB/BB。"),
-      task("桌型比较", "写出同一手 KJo 在 6-max UTG 和 full-ring UTG 的差异。")
+      task("位置标注", "分别写出 4-max、5-max、6-max、8-max、9-max 的位置顺序。"),
+      task("桌型比较", "写出同一手 KJo 在 4-max CO、6-max UTG、9-max UTG 的差异。")
     ],
-    relatedTerms: ["position", "utg", "hj", "co", "btn", "sb", "button", "small-blind", "big-blind"],
+    relatedTerms: ["position", "table-size", "short-handed", "full-ring", "utg", "utg-plus-one", "mp", "lj", "hj", "co", "btn", "sb", "button", "small-blind", "big-blind"],
     nextSteps: [nextChapter("学习起手牌与范围", 3, "继续第 4 章，从单手牌好坏过渡到范围思维。")]
   }),
   chapter({
