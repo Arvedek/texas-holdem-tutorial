@@ -161,6 +161,62 @@ function hasQuizSelection(lesson) {
   });
 }
 
+function renderRoadmap() {
+  const sevenDayPlan = [
+    ["第 1 天", "读第 1-2 章：记号、BB 单位、规则和牌型，只要求能准确读牌。"],
+    ["第 2 天", "读第 3-4 章：桌型、位置、起手牌分类，完成位置表和手牌缩写练习。"],
+    ["第 3 天", "读第 5-7 章：open、limp、3-bet、盲位防守，先减少翻前大错。"],
+    ["第 4 天", "读第 8-10 章：牌面结构、相对牌力、下注目的，学会说出每次下注理由。"],
+    ["第 5 天", "读第 11-13 章：c-bet、多人底池、权益赔率，把单挑和多人底池区分开。"],
+    ["第 6 天", "读第 14-16 章：SPR、转河计划、对手类型，开始写一手完整复盘。"],
+    ["第 7 天", "读第 17-19 章：GTO 基础、资金心态、学习流程，建立下一周训练清单。"]
+  ];
+  const thirtyDayPlan = [
+    ["第 1 周", "每天一到三章，目标是看懂牌桌语言和默认翻前纪律。"],
+    ["第 2 周", "每天做训练题并复习错题，重点是牌面结构、下注目的和赔率。"],
+    ["第 3 周", "每两天复盘一手牌，重点看 SPR、转河计划、对手类型和多人底池。"],
+    ["第 4 周", "用 GTO 概念校准基准，用 exploit、资金管理和学习例行流程稳定执行。"]
+  ];
+
+  const renderItems = (items) => items.map(([label, body]) => `
+    <li>
+      <strong>${escapeHtml(label)}</strong>
+      <span>${escapeHtml(body)}</span>
+    </li>
+  `).join("");
+
+  return `
+    <section class="panel learning-roadmap">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Study Routes</p>
+          <h3>7 天新手路线 / 30 天进阶路线</h3>
+          <p class="muted">先按路线拿到稳定正反馈，再回到章节目录查漏补缺。每天只追一个小目标：读懂、做题、复盘或修正一个错误。</p>
+        </div>
+        <span class="tag is-soft">从会看牌到会复盘</span>
+      </div>
+      <div class="lesson-columns">
+        <div>
+          <h4>7 天新手路线</h4>
+          <ul class="check-list">${renderItems(sevenDayPlan)}</ul>
+        </div>
+        <div>
+          <h4>30 天进阶路线</h4>
+          <ul class="check-list">${renderItems(thirtyDayPlan)}</ul>
+        </div>
+        <div>
+          <h4>每章通关条件</h4>
+          <ul class="check-list">
+            <li><strong>读懂</strong><span>能用自己的话解释本章 3 个学习目标。</span></li>
+            <li><strong>答题</strong><span>完成迷你测验，并把错题放进错题本复习。</span></li>
+            <li><strong>应用</strong><span>至少做 1 个练习任务或保存 1 条相关复盘。</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderChapterDirectory(lessons, completed) {
   const currentLesson = lessons.find((lesson) => !completed.has(lesson.id)) || lessons[lessons.length - 1];
   const completedCount = lessons.filter((lesson) => completed.has(lesson.id)).length;
@@ -268,13 +324,15 @@ export function renderLearning({ app, state, setState, data, navigate, openGloss
     <section class="panel section-intro">
       <div>
         <p class="eyebrow">Learning Path</p>
-        <h2>从零开始的完整 18 章学习路径</h2>
+        <h2>从零开始的完整 ${data.lessons.length} 章学习路径</h2>
         <p class="muted">按章节学习术语、规则、翻前、翻后、数学、GTO 基础、资金管理和复盘流程；每章都有目标、例子、测验和下一步。</p>
       </div>
       <div class="progress-bar" aria-label="学习完成度">
         <span style="width:${completionRate}%"></span>
       </div>
     </section>
+
+    ${renderRoadmap()}
 
     ${renderChapterDirectory(data.lessons, completed)}
 

@@ -245,5 +245,65 @@ export const drills = [
     answer: "多数继续",
     explanation: "小尺度给了较好价格，中等对子通常有摊牌价值，可跟注进入转牌。",
     tags: ["decision", "defense"]
+  },
+  {
+    id: "pf-007",
+    type: "preflop",
+    level: "入门",
+    prompt: "4-max，CO 第一行动，手牌 KTs，100bb 深度。默认方向？",
+    options: ["开池加注", "自动弃牌", "只 limp", "直接全下"],
+    answer: "开池加注",
+    explanation: "4-max CO 虽是最早位置，但后面人数少，KTs 有可玩性，适合按短桌纪律开池。",
+    tags: ["preflop", "4-max"]
+  },
+  {
+    id: "pf-008",
+    type: "preflop",
+    level: "入门",
+    prompt: "5-max，HJ 第一行动，手牌 KJo。新人默认应怎样？",
+    options: ["偏向弃牌", "任意尺度开池", "只 limp", "必然 4-bet"],
+    answer: "偏向弃牌",
+    explanation: "5-max HJ 是最早位置，KJo 容易被压制，新人先用更稳范围保护自己。",
+    tags: ["preflop", "5-max"]
+  },
+  {
+    id: "pf-009",
+    type: "preflop",
+    level: "初中级",
+    prompt: "7-max，UTG 开池，你在 LJ 拿 ATo。默认纪律？",
+    options: ["弃牌", "冷跟", "小 3-bet", "全下"],
+    answer: "弃牌",
+    explanation: "7-max UTG 范围较强，LJ 后面仍有多人未行动，ATo 被压制风险高。",
+    tags: ["preflop", "7-max"]
+  },
+  {
+    id: "pf-010",
+    type: "preflop",
+    level: "初中级",
+    prompt: "8-max，UTG+1 第一行动，手牌 AJs。新人默认？",
+    options: ["开池加注", "只 limp", "自动弃牌", "不看位置"],
+    answer: "开池加注",
+    explanation: "8-max UTG+1 仍是早位，但 AJs 属于可开强同花 Broadway，注意后位 3-bet。",
+    tags: ["preflop", "8-max"]
+  },
+  {
+    id: "pf-011",
+    type: "preflop",
+    level: "初中级",
+    prompt: "9-max，UTG 第一行动，手牌 KQo。新人默认？",
+    options: ["弃牌", "必开", "只 limp", "盲目全下"],
+    answer: "弃牌",
+    explanation: "满员桌 UTG 后面八个人，KQo 容易被更强 Broadway 和大对子压制。",
+    tags: ["preflop", "9-max"]
+  },
+  {
+    id: "dc-007",
+    type: "decision",
+    level: "初中级",
+    prompt: "多人底池，CO open 后 BTN 和 BB 跟注，翻牌 T98 两同花。你拿 AK 无同花，默认？",
+    options: ["多半过牌放弃", "机械 c-bet", "直接全下", "最小下注必赚"],
+    answer: "多半过牌放弃",
+    explanation: "多人湿润牌面命中跟注范围很多，AK 无后门很难让两名对手都弃牌，下注频率应下降。",
+    tags: ["decision", "multiway"]
   }
 ];

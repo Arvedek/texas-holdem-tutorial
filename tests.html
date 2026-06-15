@@ -29,6 +29,7 @@
       import { renderLearning } from "./src/features/learning.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js";
+      import { renderReview } from "./src/features/review.js";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -85,7 +86,10 @@
           const state = markDailyActivity(normalizeState({}), "trainCount", 5, new Date("2026-06-13T00:00:00Z"));
           return getDailyTasks(state, new Date("2026-06-13T00:00:00Z")).train;
         }],
-        ["curriculum has 18 textbook chapters", () => lessons.length === 18],
+        ["curriculum has 19 textbook chapters including multiway pots", () => {
+          return lessons.length === 19
+            && lessons.some((lesson) => lesson.id === "multiway-pots");
+        }],
         ["curriculum stages are sequential", () => lessons.every((lesson, index) => lesson.stage === index + 1)],
         ["first five chapters are beginner safe", () => {
           return lessons.slice(0, 5).every((lesson) => lesson.beginnerSafe === true);
@@ -171,6 +175,13 @@
           const termIds = new Set(glossaryTerms.map((term) => term.id));
           return lessons.every((lesson) => lesson.relatedTerms.every((termId) => termIds.has(termId)));
         }],
+        ["multiway chapter teaches lower bluff frequency and higher value threshold", () => {
+          const chapter = lessons.find((lesson) => lesson.id === "multiway-pots");
+          const text = JSON.stringify(chapter);
+          return chapter
+            && chapter.stage > lessons.find((lesson) => lesson.id === "cbet-probe-donk-checkraise").stage
+            && ["多人底池", "下注频率下降", "价值阈值提高", "顶对降级", "坚果听牌"].every((phrase) => text.includes(phrase));
+        }],
         ["all lesson quizzes have three answerable questions", () => {
           return lessons.every((lesson) => Array.isArray(lesson.quiz)
             && lesson.quiz.length === 3
@@ -238,7 +249,7 @@
             navigate: () => {}
           });
           const text = app.textContent;
-          return text.includes("18 章")
+          return text.includes("19 章")
             && text.includes(lesson.sections[0].keyTakeaway)
             && text.includes(lesson.examples[0].analysis)
             && text.includes(lesson.mistakeDetails[0].betterHabit)
@@ -288,12 +299,27 @@
           const currentButton = app.querySelector("[data-lesson-jump].is-current");
           const completedButtons = app.querySelectorAll("[data-lesson-jump].is-complete");
           const text = app.textContent;
-          return directoryButtons.length === 18
+          return directoryButtons.length === 19
             && completedButtons.length === 2
             && currentButton?.dataset.lessonJump === lessons[2].id
             && text.includes("章节目录")
             && text.includes("当前建议")
-            && text.includes("已完成 2/18");
+            && text.includes("已完成 2/19");
+        }],
+        ["learning page renders 7-day and 30-day beginner routes", () => {
+          const app = document.createElement("div");
+          renderLearning({
+            app,
+            state: normalizeState({ beginnerMode: true }),
+            setState: () => {},
+            data: { lessons, glossaryTerms },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return text.includes("7 天新手路线")
+            && text.includes("30 天进阶路线")
+            && text.includes("第 1 天")
+            && text.includes("第 4 周");
         }],
         ["glossary can receive an external search query", () => {
           const app = document.createElement("div");
@@ -325,6 +351,17 @@
           return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => text.includes(label))
             && text.includes("常见桌型")
             && app.querySelectorAll("[data-range-table-size]").length === 6;
+        }],
+        ["drills include short-handed and full-ring table contexts", () => {
+          const text = drills.map((drill) => drill.prompt).join(" ");
+          return ["4-max", "5-max", "7-max", "8-max", "9-max", "多人底池"].every((label) => text.includes(label));
+        }],
+        ["review form supports 4-max through 9-max table formats", () => {
+          const app = document.createElement("div");
+          renderReview({ app, state: normalizeState({}), setState: () => {} });
+          const select = app.querySelector('select[name="tableFormat"]');
+          const values = [...select.options].map((item) => item.value);
+          return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => values.includes(label));
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

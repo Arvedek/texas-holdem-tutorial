@@ -14,6 +14,8 @@ const STREET_LABELS = {
   river: "河牌"
 };
 
+const TABLE_FORMATS = ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"];
+
 let formState = {
   gameType: "现金桌",
   tableFormat: "6-max",
@@ -192,7 +194,7 @@ export function renderReview({ app, state, setState }) {
 
         <div class="form-grid">
           <label>游戏类型<select name="gameType">${option("现金桌", "现金桌", formState.gameType)}${option("锦标赛", "锦标赛", formState.gameType)}</select></label>
-          <label>桌型<select name="tableFormat">${option("6-max", "6-max", formState.tableFormat)}${option("满员桌", "满员桌", formState.tableFormat)}${option("单挑", "单挑", formState.tableFormat)}</select></label>
+          <label>桌型<select name="tableFormat">${TABLE_FORMATS.map((format) => option(format, format, formState.tableFormat)).join("")}</select></label>
           <label>位置<input name="position" value="${escapeAttribute(formState.position)}"></label>
           <label>有效后手<input name="effectiveStack" value="${escapeAttribute(formState.effectiveStack)}" inputmode="decimal"></label>
           <label>Hero 手牌<input name="heroHand" value="${escapeAttribute(formState.heroHand)}"></label>

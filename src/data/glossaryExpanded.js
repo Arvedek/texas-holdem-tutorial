@@ -167,4 +167,7 @@ export const expandedGlossaryTerms = [
 
   g("pot-control", "控池", "Pot control", "", ["控制底池", "pot control"], "Postflop", "intermediate", "用过牌或小注避免边缘牌打成过大底池。", "控池适合有摊牌价值但不想面对多街大注的牌。", "中对在干燥转牌过牌。", "控池不是害怕下注，而是匹配牌力和目标。", ["showdown-value", "spr"]),
   g("initiative", "主动权", "Initiative", "", ["进攻主动", "initiative"], "Postflop", "intermediate", "上一轮主动加注或下注带来的叙事优势。", "有主动权的一方更容易代表强范围，但仍受牌面约束。", "翻前加注者在 A72 翻牌 c-bet。", "主动权不是自动下注许可证。", ["c-bet", "range-advantage"]),
+  g("multiway-pot", "多人底池", "Multiway pot", "", ["multiway", "多人池", "三人底池"], "Postflop", "intermediate", "三名或更多玩家进入同一个翻后底池。", "多人底池里至少一人击中强牌的概率更高，下注频率通常下降。", "CO 开池，BTN 和 BB 都跟注，翻牌进入三人底池。", "不要把单挑底池的高频 c-bet 直接照搬到多人底池。", ["c-bet", "value-threshold", "bluff-frequency"]),
+  g("value-threshold", "价值阈值", "Value threshold", "", ["价值门槛", "value threshold"], "Bet Lines", "intermediate", "能清楚下注拿价值的最低牌力门槛。", "人数越多、牌面越湿润，价值阈值通常越高，顶对和弱两对更容易变成控池牌。", "单挑 A72 上 AQ 可价值下注，三人 A97 两同花上要更谨慎。", "价值阈值不是固定牌名，而是由人数、范围、牌面和行动线共同决定。", ["value-bet", "top-pair", "multiway-pot"]),
+  g("bluff-frequency", "诈唬频率", "Bluff frequency", "", ["bluff frequency", "诈唬比例"], "Bet Lines", "intermediate", "某条线里选择诈唬下注的频率或比例。", "多人底池、跟注站和低弃牌率环境会降低可盈利诈唬频率。", "三人湿润牌面拿 AK 无后门时，诈唬频率应明显低于单挑干燥面。", "诈唬频率低不等于永不诈唬，而是只保留更有阻断和权益的候选牌。", ["bluff", "fold-equity", "multiway-pot"]),
 ];

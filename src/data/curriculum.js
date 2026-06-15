@@ -10,6 +10,7 @@ const chapterIds = [
   "relative-hand-strength",
   "bet-purpose-sizing",
   "cbet-probe-donk-checkraise",
+  "multiway-pots",
   "equity-outs-odds-realization",
   "spr-stack-depth-commitment",
   "turn-river-planning",
@@ -683,11 +684,65 @@ export const curriculumChapters = [
       task("延迟计划", "找 3 个不适合翻牌 c-bet 的牌面，写转牌 delayed c-bet 条件。")
     ],
     relatedTerms: ["c-bet", "delayed-c-bet", "probe-bet", "donk-bet", "check-raise", "initiative", "semi-bluff"],
-    nextSteps: [nextChapter("学习权益与赔率", 11, "继续第 12 章，用 outs、赔率和权益实现给跟注决策定价。")]
+    nextSteps: [nextChapter("学习多人底池", 11, "继续第 12 章，把单挑底池的下注习惯改造成多人底池纪律。")]
   }),
   chapter({
     id: chapterIds[11],
     stage: 12,
+    title: "多人底池策略",
+    subtitle: "人越多，价值阈值越高，诈唬越要克制",
+    difficulty: "intermediate",
+    estimatedMinutes: 18,
+    beginnerSafe: false,
+    summary: "本章讲多人底池、下注频率下降、价值阈值提高、顶对降级、坚果听牌、位置和相对牌力变化。",
+    plainLanguage: "单挑底池里，一个小 c-bet 可以攻击大量空气牌；多人底池里，至少有一个人击中牌面的概率大幅上升。你不需要赢过一个范围，而是要同时穿过多个范围。",
+    tableExample: "你在 CO 用 AQ 开池，BTN 和 BB 跟注，翻牌 A 9 7 两同花。单挑时 AQ 顶对强踢脚可以常下注；三人底池里，BTN 和 BB 都可能有两对、set、同花听牌，你的顶对要更重视尺度和控池。",
+    whyItMatters: "很多新手把 BTN vs BB 的单挑 c-bet 习惯照搬到三人底池，结果用一对牌做大底池、用空气牌对多人开火、用弱听牌付太贵价格。",
+    miniChecklist: ["先数清还在底池的人数", "把顶对和弱听牌降级", "只用清楚价值牌和高质量听牌做大底池"],
+    encouragement: "多人底池不是要你害怕，而是提醒你：信息变少、强牌密度变高，耐心本身就是盈利动作。",
+    goals: [
+      "能解释为什么多人底池下注频率下降",
+      "能说明多人底池价值阈值提高和顶对降级",
+      "能区分坚果听牌、弱听牌和被支配听牌"
+    ],
+    prerequisites: [chapterIds[8], chapterIds[9], chapterIds[10]],
+    sections: [
+      sec("多人底池的核心变化", "multiway pot 指三名或更多玩家进入翻后。人数越多，至少一名对手击中强牌或强听牌的概率越高，因此原本单挑可以高频下注的牌面，在多人底池里通常要降低下注频率。", "多人底池默认更诚实，空气下注更少。"),
+      sec("下注频率下降", "单挑底池中 c-bet 可以用范围优势攻击对手的弃牌；多人底池中，你的下注要同时让多个范围弃牌，成功率下降。没有明显范围优势、坚果优势或高质量后门权益时，过牌常常更好。", "多人底池诈唬需要更强理由。"),
+      sec("价值阈值提高", "value threshold 是能舒服下注拿价值的最低牌力。多人底池里，更差牌愿意支付的范围变窄，更强牌出现概率变高，所以顶对、弱两对和低同花都要降级看待。", "能赢单挑不代表能在多人底池打大。"),
+      sec("听牌质量", "坚果听牌比低听牌重要得多。多人底池里，低同花听牌完成后仍可能输给更高同花，弱顺子也可能被更大顺子压制。优先继续坚果同花听牌、开放顺听牌加额外权益，少为被支配听牌付大价格。", "多人底池更奖励能做成坚果的牌。")
+    ],
+    examples: [
+      ex("顶对降级", "CO open，BTN call，BB call。翻牌 A97 两同花，你拿 AQ。", "AQ 是强顶对，但三人底池里对手范围有 99、77、A9s、A7s、同花听牌和组合听牌。下注可以拿价值和保护，但不应自动三条街做大。", "多人底池顶对要先问能被哪些更差牌支付。"),
+      ex("空气牌少开火", "HJ open，CO call，BTN call，翻牌 T98 两同花，你拿 AK 无同花。", "这个牌面对跟注范围命中很好，多人底池里下注很难让两名对手都弃掉足够牌。过牌放弃或延后行动通常优于机械 c-bet。", "多人湿润牌面少用空气牌下注。")
+    ],
+    decisionFlow: [
+      "第一步：确认是单挑底池还是多人底池。",
+      "第二步：评估牌面是否同时命中多个跟注范围。",
+      "第三步：把下注范围收紧到明确价值牌、强听牌和少量高质量半诈唬。",
+      "第四步：面对大下注时提高继续门槛，尤其警惕弱听牌和单对牌。"
+    ],
+    mistakeDetails: [
+      miss("多人底池机械 c-bet", "多人同时弃牌的概率较低，空气下注很容易被至少一人继续。", "多人底池先问下注能让哪些更好牌弃牌，或被哪些更差牌跟注。"),
+      miss("顶对打成坚果", "对手数量越多，两对、set 和强听牌密度越高，顶对承受大底池能力下降。", "顶对好踢脚可以拿价值，但要按人数、牌面和行动控制底池。"),
+      miss("低听牌付大价格", "完成低同花或低顺子后仍可能输给更高版本，反向隐含赔率更严重。", "优先继续坚果听牌；弱听牌需要更好价格和位置。")
+    ],
+    checkpoint: ["识别多人底池", "说明下注频率下降", "判断价值阈值和听牌质量"],
+    quiz: [
+      q("多人底池中默认下注频率通常怎样？", ["下降", "无限上升", "完全不变"], "下降", "人数越多，至少一名对手继续的概率越高，空气下注更难盈利。"),
+      q("多人底池里顶对通常应该怎样看待？", ["相对降级", "永远是坚果", "必须每次全下"], "相对降级", "对手数量增加会提高两对、set 和强听牌出现概率。"),
+      q("多人底池更偏好哪类听牌继续？", ["坚果听牌", "任何低同花听牌", "没有 outs 的空气"], "坚果听牌", "坚果听牌完成后不容易被更高版本反超。")
+    ],
+    practiceTasks: [
+      task("多人底池降级练习", "写 5 个三人底池顶对场景，分别标注哪些适合价值下注、哪些适合控池。"),
+      task("听牌质量排序", "把低同花听牌、坚果同花听牌、开放顺听牌、卡顺听牌按多人底池可继续性排序，并写理由。")
+    ],
+    relatedTerms: ["multiway-pot", "value-threshold", "bluff-frequency", "top-pair", "nut-flush-draw", "reverse-implied-odds", "c-bet", "showdown-value"],
+    nextSteps: [nextChapter("学习权益与赔率", 12, "继续第 13 章，用 outs、赔率和权益实现给跟注决策定价。")]
+  }),
+  chapter({
+    id: chapterIds[12],
+    stage: 13,
     title: "权益、outs、赔率与实现",
     subtitle: "用数字给跟注和诈唬刹车",
     difficulty: "intermediate",
@@ -737,11 +792,11 @@ export const curriculumChapters = [
       task("outs 清洗", "给 5 个听牌场景标出干净 outs 和脏 outs。")
     ],
     relatedTerms: ["equity", "outs", "pot-odds", "implied-odds", "reverse-implied-odds", "fold-equity", "equity-realization", "draw"],
-    nextSteps: [nextChapter("学习 SPR 与承诺", 12, "继续第 13 章，用有效筹码和 SPR 规划底池能走多远。")]
+    nextSteps: [nextChapter("学习 SPR 与承诺", 13, "继续第 14 章，用有效筹码和 SPR 规划底池能走多远。")]
   }),
   chapter({
-    id: chapterIds[12],
-    stage: 13,
+    id: chapterIds[13],
+    stage: 14,
     title: "SPR、有效筹码与承诺计划",
     subtitle: "底池和剩余筹码决定一手牌能走多远",
     difficulty: "intermediate",
@@ -791,11 +846,11 @@ export const curriculumChapters = [
       task("承诺判断", "为 5 个顶对场景写出是否愿意打到全下。")
     ],
     relatedTerms: ["spr", "effective-stack", "commitment", "all-in", "top-pair", "overpair", "bet-sizing"],
-    nextSteps: [nextChapter("学习转河计划", 13, "继续第 14 章，把翻牌决定延伸到转牌和河牌计划。")]
+    nextSteps: [nextChapter("学习转河计划", 14, "继续第 15 章，把翻牌决定延伸到转牌和河牌计划。")]
   }),
   chapter({
-    id: chapterIds[13],
-    stage: 14,
+    id: chapterIds[14],
+    stage: 15,
     title: "转牌与河牌计划",
     subtitle: "第二枪、控池、薄价值和河牌纪律",
     difficulty: "advanced",
@@ -845,11 +900,11 @@ export const curriculumChapters = [
       task("河牌纪律", "写 3 个你过去想 hero call 的场景，并列出实际能击败的诈唬。")
     ],
     relatedTerms: ["barrel", "pot-control", "thin-value", "bluff-catch", "blocker", "river", "turn", "showdown-value"],
-    nextSteps: [nextChapter("学习对手类型", 14, "继续第 15 章，学习根据对手类型和群体倾向做剥削调整。")]
+    nextSteps: [nextChapter("学习对手类型", 15, "继续第 16 章，学习根据对手类型和群体倾向做剥削调整。")]
   }),
   chapter({
-    id: chapterIds[14],
-    stage: 15,
+    id: chapterIds[15],
+    stage: 16,
     title: "对手类型与剥削调整",
     subtitle: "先观察偏差，再偏离基准",
     difficulty: "advanced",
@@ -899,11 +954,11 @@ export const curriculumChapters = [
       task("剥削计划", "为 calling station、nit、maniac 各写一个调整。")
     ],
     relatedTerms: ["opponent-type", "calling-station", "nit", "maniac", "regular", "population-tendency", "exploit", "vpip", "pfr"],
-    nextSteps: [nextChapter("学习 GTO 基础", 15, "继续第 16 章，把范围优势、坚果优势和平衡作为理论基准。")]
+    nextSteps: [nextChapter("学习 GTO 基础", 16, "继续第 17 章，把范围优势、坚果优势和平衡作为理论基准。")]
   }),
   chapter({
-    id: chapterIds[15],
-    stage: 16,
+    id: chapterIds[16],
+    stage: 17,
     title: "GTO 基础、范围优势与坚果优势",
     subtitle: "理论是地图，不是方向盘",
     difficulty: "advanced",
@@ -953,11 +1008,11 @@ export const curriculumChapters = [
       task("理论转执行", "选一个 solver 建议，把它翻译成一句牌桌可执行规则。")
     ],
     relatedTerms: ["gto", "balance", "range-advantage", "nut-advantage", "mdf", "solver", "exploit"],
-    nextSteps: [nextChapter("学习赛制与资金管理", 16, "继续第 17 章，把赛制、资金管理和心态纪律纳入长期框架。")]
+    nextSteps: [nextChapter("学习赛制与资金管理", 17, "继续第 18 章，把赛制、资金管理和心态纪律纳入长期框架。")]
   }),
   chapter({
-    id: chapterIds[16],
-    stage: 17,
+    id: chapterIds[17],
+    stage: 18,
     title: "赛制、资金管理与心态",
     subtitle: "先活下来，才有长期优势",
     difficulty: "advanced",
@@ -1007,11 +1062,11 @@ export const curriculumChapters = [
       task("心态日志", "记录三次情绪波动前的触发点和当时错误冲动。")
     ],
     relatedTerms: ["cash-game", "tournament", "icm", "ante", "bankroll", "buy-in", "variance", "downswing", "tilt", "stop-loss"],
-    nextSteps: [nextChapter("建立复盘习惯", 17, "继续第 18 章，把手牌记录、错误标签和每周学习计划串起来。")]
+    nextSteps: [nextChapter("建立复盘习惯", 18, "继续第 19 章，把手牌记录、错误标签和每周学习计划串起来。")]
   }),
   chapter({
-    id: chapterIds[17],
-    stage: 18,
+    id: chapterIds[18],
+    stage: 19,
     title: "手牌复盘与学习流程",
     subtitle: "把错误变成下一周的训练计划",
     difficulty: "advanced",
