@@ -136,6 +136,27 @@
             && !text.includes("能说出 6-max 六个位置的行动顺序")
             && !text.includes("按顺序说出 6-max 位置");
         }],
+        ["beginner chapters include visible reference tables", () => {
+          const rules = lessons.find((lesson) => lesson.id === "rules-hand-rankings-showdown");
+          const positions = lessons.find((lesson) => lesson.id === "positions-blinds-action-order");
+          const app = document.createElement("div");
+          renderLearning({
+            app,
+            state: normalizeState({ beginnerMode: true }),
+            setState: () => {},
+            data: { lessons, glossaryTerms },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return Array.isArray(rules.referenceTables)
+            && rules.referenceTables.some((table) => table.title === "牌型速查表" && table.rows.length === 10)
+            && Array.isArray(positions.referenceTables)
+            && positions.referenceTables.some((table) => table.title === "桌型位置表" && table.rows.length >= 6)
+            && text.includes("牌型速查表")
+            && text.includes("桌型位置表")
+            && text.includes("第 1 强")
+            && text.includes("4-max");
+        }],
         ["chapter prerequisites only point backward or to glossary terms", () => {
           const chapterIndex = new Map(lessons.map((lesson, index) => [lesson.id, index]));
           const termIds = new Set(glossaryTerms.map((term) => term.id));

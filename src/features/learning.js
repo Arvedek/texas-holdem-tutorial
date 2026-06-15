@@ -75,6 +75,24 @@ function renderPracticeTasks(lesson) {
   `).join("");
 }
 
+function renderReferenceTables(lesson) {
+  return (lesson.referenceTables || []).map((table) => `
+    <div class="reference-table-wrap">
+      <h5>${escapeHtml(table.title)}</h5>
+      <table class="reference-table">
+        <thead>
+          <tr>${(table.columns || []).map((column) => `<th>${escapeHtml(column)}</th>`).join("")}</tr>
+        </thead>
+        <tbody>
+          ${(table.rows || []).map((row) => `
+            <tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `).join("");
+}
+
 function renderRelatedTerms(lesson, glossaryTerms) {
   const termsById = new Map((glossaryTerms || []).map((term) => [term.id, term]));
   return (lesson.relatedTerms || []).map((termId) => {
@@ -170,6 +188,12 @@ function textbookPanel(lesson, completed, glossaryTerms) {
           </div>
         `).join("")}
       </div>
+      ${(lesson.referenceTables || []).length ? `
+        <div class="beginner-checklist">
+          <h4>速查表</h4>
+          ${renderReferenceTables(lesson)}
+        </div>
+      ` : ""}
       <div class="beginner-checklist">
         <h4>牌桌例子</h4>
         ${renderExamples(lesson)}

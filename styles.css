@@ -700,6 +700,35 @@ h1 {
   background: rgba(244, 201, 93, 0.14);
 }
 
+.reference-table-wrap {
+  overflow-x: auto;
+}
+
+.reference-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.reference-table th,
+.reference-table td {
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(124, 115, 96, 0.16);
+}
+
+.reference-table th {
+  color: var(--felt);
+  background: rgba(15, 90, 67, 0.07);
+}
+
+.reference-table td {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .textbook-panel ol {
   margin: 0;
   padding-left: 20px;

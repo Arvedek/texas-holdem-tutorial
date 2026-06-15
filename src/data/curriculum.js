@@ -39,6 +39,10 @@ function task(title, body) {
   return { title, body };
 }
 
+function refTable(title, columns, rows) {
+  return { title, columns, rows };
+}
+
 function nextChapter(label, chapterIndex, note) {
   return { label, route: "learning", chapterId: chapterIds[chapterIndex], note };
 }
@@ -141,6 +145,20 @@ export const curriculumChapters = [
       sec("平分池与边池", "当双方最佳五张完全相同就是 chop pot。多人全下且筹码量不同，会形成 side pot，短筹码只能争夺自己覆盖到的部分。", "先分清谁有资格争夺哪个底池。"),
       sec("Counterfeit", "counterfeit 指公共牌让你原本的优势被抹平。例如你用小对子组成两对，转河又发出更大的公共对子，自己的小对子可能不再参与最佳五张。", "公共牌会改写双方的最佳五张。")
     ],
+    referenceTables: [
+      refTable("牌型速查表", ["强度", "牌型", "意思", "例子"], [
+        ["第 1 强", "皇家同花顺", "同花色 A K Q J T", "As Ks Qs Js Ts"],
+        ["第 2 强", "同花顺", "同花色连续五张", "9h 8h 7h 6h 5h"],
+        ["第 3 强", "四条", "四张同点数牌", "Ah Ad Ac As 7d"],
+        ["第 4 强", "葫芦", "三条加一对", "Kh Kd Ks 9c 9d"],
+        ["第 5 强", "同花", "五张同花色不连续", "As Js 8s 5s 2s"],
+        ["第 6 强", "顺子", "五张连续点数不同花也可以", "9s 8h 7d 6c 5s"],
+        ["第 7 强", "三条", "三张同点数牌", "Qc Qd Qs 8h 2c"],
+        ["第 8 强", "两对", "两个不同对子", "Ah Ad 7s 7c Kd"],
+        ["第 9 强", "一对", "一组对子", "Jh Jd Ac 8s 3h"],
+        ["第 10 强", "高牌", "没有组成以上牌型时比最高牌", "As Qd 9c 6h 2s"]
+      ])
+    ],
     examples: [
       ex("踢脚决定输赢", "你拿 AK，对手拿 AQ，公共牌 A 9 4 2 7。", "双方都是一对 A，但你的五张是 AAK97，对手是 AAQ97，你用 K 踢脚获胜。", "同样顶对也要比较踢脚。"),
       ex("两对被反制", "你拿 65，公共牌 6 5 K K A。", "翻牌两对看似强，但河牌后你的最佳五张是 KK66A：公共牌的一对 K、你的 6，以及 A 踢脚。对手只要有任意 A，就能组成 KKAA6，用 K 和 A 的两对压过你；原先 6 和 5 的小两对被公共牌覆盖。", "公共牌大对子会 counterfeit 小两对。")
@@ -196,6 +214,16 @@ export const curriculumChapters = [
       sec("盲注机制", "SB 和 BB 被迫投入筹码，所以他们会得到一定防守价格，但翻后位置差。盲注不是免费筹码，而是长期成本。", "盲位要防守，但不能无条件防守。"),
       sec("行动顺序", "翻前从 UTG 开始，盲位最后行动；翻后从按钮左侧仍在牌局中的玩家开始，按钮位最晚。", "翻前和翻后的先后顺序不完全一样。"),
       sec("桌型差异", "人数越多，早位后面有更多未行动玩家，所以前位范围越紧。人数越少，盲注来得越快，CO、BTN、SB、BB 的争夺更频繁。短桌可以更主动，但不是任何两张都玩。", "人数改变的是未行动人数和盲注压力。")
+    ],
+    referenceTables: [
+      refTable("桌型位置表", ["桌型", "位置顺序", "新人重点"], [
+        ["4-max", "CO -> BTN -> SB -> BB", "短桌最激进，CO 是最早位置但压力小于满员桌早位。"],
+        ["5-max", "HJ -> CO -> BTN -> SB -> BB", "比 4-max 多一个 HJ，仍属于短桌。"],
+        ["6-max", "UTG -> HJ -> CO -> BTN -> SB -> BB", "最常见线上短桌结构。"],
+        ["7-max", "UTG -> LJ -> HJ -> CO -> BTN -> SB -> BB", "多出 LJ，早位要比 6-max 更谨慎。"],
+        ["8-max", "UTG -> UTG+1 -> LJ -> HJ -> CO -> BTN -> SB -> BB", "早位压力进一步增加。"],
+        ["9-max", "UTG -> UTG+1 -> MP -> LJ -> HJ -> CO -> BTN -> SB -> BB", "满员桌早位最紧，不能照搬短桌范围。"]
+      ])
     ],
     examples: [
       ex("按钮位的信息优势", "CO 弃牌，BTN 看到 SB 和 BB 是两个偏紧玩家。", "BTN 可以用更宽范围开池，因为后面只剩两个盲位，并且翻后常有位置优势。", "位置好时边缘牌更容易实现价值。"),
