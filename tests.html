@@ -399,6 +399,35 @@
             && text.includes("面对 BTN/SB 偷盲")
             && text.includes("大盲防守场景");
         }],
+        ["range matrix shows action counts and readable risk guidance", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          app.querySelector('[data-range-table-size="6-max"]').click();
+          app.querySelector('[data-range-position="UTG"]').click();
+          const text = app.textContent;
+          const playable = Number(app.querySelector("[data-range-count-playable]")?.textContent || 0);
+          const folded = Number(app.querySelector("[data-range-count-fold]")?.textContent || 0);
+          return text.includes("范围统计")
+            && text.includes("默认可玩")
+            && text.includes("默认弃牌")
+            && text.includes("不是死表")
+            && playable > 0
+            && folded > playable;
+        }],
+        ["big blind defense stats tighten against early opens", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          app.querySelector('[data-range-table-size="6-max"]').click();
+          app.querySelector('[data-range-position="BB"]').click();
+          const latePlayable = Number(app.querySelector("[data-range-count-playable]")?.textContent || 0);
+          app.querySelector('[data-bb-defense-scenario="early-open"]').click();
+          const earlyPlayable = Number(app.querySelector("[data-range-count-playable]")?.textContent || 0);
+          const text = app.textContent;
+          return latePlayable > earlyPlayable
+            && earlyPlayable > 0
+            && text.includes("早位开池代表强范围")
+            && text.includes("面对早位强开池");
+        }],
         ["drills include short-handed and full-ring table contexts", () => {
           const text = drills.map((drill) => drill.prompt).join(" ");
           return ["4-max", "5-max", "7-max", "8-max", "9-max", "多人底池"].every((label) => text.includes(label));

@@ -1174,6 +1174,74 @@ textarea {
   gap: 8px;
 }
 
+.range-stats {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 244, 0.82);
+}
+
+.range-stats-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.range-stats-head h4,
+.range-stats-head p,
+.range-stats p {
+  margin: 0;
+}
+
+.range-stats-head > strong {
+  color: var(--felt);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.range-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.range-stat {
+  min-height: 72px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(28, 37, 31, 0.08);
+}
+
+.range-stat span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.range-stat strong {
+  color: var(--ink);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.range-stat.is-premium {
+  background: rgba(181, 59, 45, 0.08);
+}
+
+.range-stat.is-open {
+  background: rgba(22, 114, 79, 0.09);
+}
+
+.range-stat.is-fold {
+  background: rgba(124, 115, 96, 0.1);
+}
+
 .legend-dot {
   width: 10px;
   height: 10px;

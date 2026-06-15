@@ -169,6 +169,28 @@ function actionLabel(action, item) {
   }[action];
 }
 
+function getRangeActionCounts(rangeInfo, hasExactRange) {
+  const counts = {
+    premium: 0,
+    open: 0,
+    fold: 0,
+    context: 0
+  };
+
+  RANKS.forEach((rowRank) => {
+    RANKS.forEach((colRank) => {
+      const hand = getMatrixHand(rowRank, colRank);
+      counts[getHandAction(hand, rangeInfo, hasExactRange)] += 1;
+    });
+  });
+
+  return {
+    ...counts,
+    playable: counts.premium + counts.open,
+    total: RANKS.length * RANKS.length
+  };
+}
+
 function getBbDefenseScenario(item, spotKey) {
   if (!item.defend) {
     return null;
@@ -224,6 +246,40 @@ function renderLegend() {
       <span><i class="legend-dot is-open"></i>默认开池或防守</span>
       <span><i class="legend-dot is-fold"></i>默认弃牌</span>
       <span><i class="legend-dot is-context"></i>需要看对手位置</span>
+    </div>
+  `;
+}
+
+function renderRangeStats(item, activeScenario, counts) {
+  const playableLabel = item.defend ? "默认可防守" : "默认可玩";
+  const guidance = activeScenario
+    ? `当前是${activeScenario.label}。大盲防守必须先看开池者位置；面对早位强开池要明显收紧，面对 BTN/SB 偷盲才可以更宽。`
+    : "这是无人入池时的默认开池参考，不是死表；位置越早越要紧，桌况、抽水、筹码深度和对手 3-bet 频率都会改变边界。";
+
+  return `
+    <div class="range-stats" aria-label="范围统计">
+      <div class="range-stats-head">
+        <div>
+          <p class="eyebrow">范围统计</p>
+          <h4>${escapeHtml(item.tableSize)} ${escapeHtml(item.position)} ${activeScenario ? escapeHtml(activeScenario.label) : "默认开池"}</h4>
+        </div>
+        <strong>${counts.playable}/${counts.total}</strong>
+      </div>
+      <div class="range-stat-grid">
+        <div class="range-stat is-premium">
+          <span>强价值</span>
+          <strong>${counts.premium}</strong>
+        </div>
+        <div class="range-stat is-open">
+          <span>${escapeHtml(playableLabel)}</span>
+          <strong data-range-count-playable>${counts.playable}</strong>
+        </div>
+        <div class="range-stat is-fold">
+          <span>默认弃牌</span>
+          <strong data-range-count-fold>${counts.fold}</strong>
+        </div>
+      </div>
+      <p class="muted">${escapeHtml(guidance)}</p>
     </div>
   `;
 }
@@ -339,6 +395,8 @@ export function renderRanges({ app, data }) {
   const spotKey = `${activeTableSize}-${activeRange.position}`;
   const activeScenario = getBbDefenseScenario(activeRange, spotKey);
   const rangeInfo = expandRangeTokens(activeRange.openRaise || activeScenario?.range || []);
+  const hasExactRange = Boolean(activeRange.openRaise || activeScenario);
+  const actionCounts = getRangeActionCounts(rangeInfo, hasExactRange);
   const selectedHand = selectedHandBySpot[spotKey] || (rangeInfo.hands.has("AA") ? "AA" : "AKs");
   selectedHandBySpot = {
     ...selectedHandBySpot,
@@ -388,10 +446,11 @@ export function renderRanges({ app, data }) {
 
       ${renderLegend()}
       ${renderBbScenarioSwitch(activeScenario)}
+      ${renderRangeStats(activeRange, activeScenario, actionCounts)}
 
       <div class="range-matrix-layout">
         <div>
-          ${renderHandMatrix(activeRange, rangeInfo, selectedHand, Boolean(activeRange.openRaise || activeScenario))}
+          ${renderHandMatrix(activeRange, rangeInfo, selectedHand, hasExactRange)}
         </div>
         <div class="range-side-panel">
           ${renderHandDetail(activeRange, rangeInfo, selectedHand, activeScenario)}
