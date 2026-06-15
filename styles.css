@@ -1154,6 +1154,26 @@ textarea {
   align-items: center;
 }
 
+.bb-scenario-switch {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(56, 107, 154, 0.22);
+  border-radius: 8px;
+  background: rgba(56, 107, 154, 0.07);
+}
+
+.bb-scenario-switch h4,
+.bb-scenario-switch p {
+  margin: 0;
+}
+
+.bb-scenario-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
 .legend-dot {
   width: 10px;
   height: 10px;

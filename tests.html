@@ -381,6 +381,24 @@
             && text.includes("A7s 在 4-max CO")
             && text.includes("默认可以开池");
         }],
+        ["big blind range matrix uses defense scenarios instead of all blue cells", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          app.querySelector('[data-range-table-size="6-max"]').click();
+          app.querySelector('[data-range-position="BB"]').click();
+          const cells = [...app.querySelectorAll("[data-hand-cell]")];
+          const contextCells = cells.filter((cell) => cell.dataset.rangeAction === "context");
+          const aa = app.querySelector('[data-hand-cell="AA"]');
+          const sevenTwo = app.querySelector('[data-hand-cell="72o"]');
+          const text = app.textContent;
+          return cells.length === 169
+            && contextCells.length < 169
+            && aa.dataset.rangeAction === "premium"
+            && sevenTwo.dataset.rangeAction === "fold"
+            && app.querySelectorAll("[data-bb-defense-scenario]").length >= 3
+            && text.includes("面对 BTN/SB 偷盲")
+            && text.includes("大盲防守场景");
+        }],
         ["drills include short-handed and full-ring table contexts", () => {
           const text = drills.map((drill) => drill.prompt).join(" ");
           return ["4-max", "5-max", "7-max", "8-max", "9-max", "多人底池"].every((label) => text.includes(label));

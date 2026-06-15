@@ -3,9 +3,30 @@ import { escapeAttribute, escapeHtml } from "../lib/sanitize.js";
 let selectedTableSize = "6-max";
 let selectedPositionByTable = {};
 let selectedHandBySpot = {};
+let selectedBbScenarioBySpot = {};
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 const PREMIUM_HANDS = new Set(["AA", "KK", "QQ", "JJ", "TT", "AKs", "AKo", "AQs"]);
+const BB_DEFENSE_SCENARIOS = [
+  {
+    id: "late-steal",
+    label: "面对 BTN/SB 偷盲",
+    note: "后位和小盲开池通常更宽，大盲可以防守更多同花牌、对子、Broadway 和连张，但仍要弃掉无法兑现权益的垃圾牌。",
+    range: ["22+", "A2s+", "A7o+", "K7s+", "KTo+", "Q9s+", "QTo+", "J9s+", "JTo", "T8s+", "98s-54s", "97s+", "86s+"]
+  },
+  {
+    id: "middle-open",
+    label: "面对 CO/HJ 开池",
+    note: "中后位开池没有按钮偷盲那么宽，大盲要收紧到更能成牌、被支配风险更低的组合。",
+    range: ["44+", "A5s+", "ATo+", "KTs+", "KQo", "QTs+", "JTs", "T9s", "98s"]
+  },
+  {
+    id: "early-open",
+    label: "面对早位强开池",
+    note: "早位开池代表强范围，大盲即使有折扣也不能乱买票。新人优先保留高对子、强 A 和少量可玩性极好的同花 Broadway。",
+    range: ["88+", "AJs+", "AQo+", "KQs", "QJs", "JTs"]
+  }
+];
 
 function chips(items) {
   return (items || []).map((item) => `<span class="range-chip">${escapeHtml(item)}</span>`).join("");
@@ -148,6 +169,15 @@ function actionLabel(action, item) {
   }[action];
 }
 
+function getBbDefenseScenario(item, spotKey) {
+  if (!item.defend) {
+    return null;
+  }
+
+  const selectedId = selectedBbScenarioBySpot[spotKey] || BB_DEFENSE_SCENARIOS[0].id;
+  return BB_DEFENSE_SCENARIOS.find((scenario) => scenario.id === selectedId) || BB_DEFENSE_SCENARIOS[0];
+}
+
 function describePlusToken(token) {
   const pair = token.match(/^([AKQJT98765432])\1\+$/);
   if (pair) {
@@ -198,9 +228,7 @@ function renderLegend() {
   `;
 }
 
-function renderHandMatrix(item, rangeInfo, selectedHand) {
-  const hasExactRange = Boolean(item.openRaise);
-
+function renderHandMatrix(item, rangeInfo, selectedHand, hasExactRange) {
   return `
     <div class="range-matrix" role="grid" aria-label="${escapeAttribute(item.tableSize)} ${escapeAttribute(item.position)} 13x13 起手牌矩阵">
       ${RANKS.map((rowRank) => RANKS.map((colRank) => {
@@ -222,8 +250,8 @@ function renderHandMatrix(item, rangeInfo, selectedHand) {
   `;
 }
 
-function renderHandDetail(item, rangeInfo, selectedHand) {
-  const hasExactRange = Boolean(item.openRaise);
+function renderHandDetail(item, rangeInfo, selectedHand, activeScenario) {
+  const hasExactRange = Boolean(item.openRaise || activeScenario);
   const action = getHandAction(selectedHand, rangeInfo, hasExactRange);
   const source = rangeInfo.sources.get(selectedHand);
   const tokenDescription = describeToken(source);
@@ -243,7 +271,8 @@ function renderHandDetail(item, rangeInfo, selectedHand) {
     <aside class="range-hand-detail">
       <p class="eyebrow">Selected Hand</p>
       <h3>${escapeHtml(selectedHand)} 在 ${escapeHtml(item.tableSize)} ${escapeHtml(item.position)}</h3>
-      <p><strong>${escapeHtml(actionLabel(action, item))}</strong>：${action === "fold" ? "这手牌不在当前新人默认范围里，先弃牌可以减少翻前大错。" : `这手牌来自 ${escapeHtml(source)}，默认可以开池。`}</p>
+      <p><strong>${escapeHtml(actionLabel(action, item))}</strong>：${action === "fold" ? "这手牌不在当前新人默认范围里，先弃牌可以减少翻前大错。" : `这手牌来自 ${escapeHtml(source)}，${activeScenario ? "默认可以防守或加注反击。" : "默认可以开池。"}`}</p>
+      ${activeScenario ? `<p class="muted">当前场景：${escapeHtml(activeScenario.label)}。${escapeHtml(activeScenario.note)}</p>` : ""}
       ${tokenDescription ? `<p class="muted">${escapeHtml(tokenDescription)}</p>` : ""}
       <p class="muted">${escapeHtml(item.habit)}</p>
     </aside>
@@ -266,6 +295,32 @@ function renderShorthandGuide(tokens) {
   `;
 }
 
+function renderBbScenarioSwitch(activeScenario) {
+  if (!activeScenario) {
+    return "";
+  }
+
+  return `
+    <div class="bb-scenario-switch">
+      <div>
+        <p class="eyebrow">大盲防守场景</p>
+        <h4>先选对手从哪里开池</h4>
+      </div>
+      <div class="bb-scenario-buttons">
+        ${BB_DEFENSE_SCENARIOS.map((scenario) => `
+          <button
+            class="chip-button ${scenario.id === activeScenario.id ? "is-active" : ""}"
+            data-bb-defense-scenario="${escapeAttribute(scenario.id)}"
+          >
+            ${escapeHtml(scenario.label)}
+          </button>
+        `).join("")}
+      </div>
+      <p class="muted">${escapeHtml(activeScenario.note)}</p>
+    </div>
+  `;
+}
+
 export function renderRanges({ app, data }) {
   const ranges = data.preflopRanges || [];
   const tableSizes = [...new Set(ranges.map((item) => item.tableSize))];
@@ -282,7 +337,8 @@ export function renderRanges({ app, data }) {
   };
   const activeRange = visibleRanges.find((item) => item.position === activePosition) || visibleRanges[0];
   const spotKey = `${activeTableSize}-${activeRange.position}`;
-  const rangeInfo = expandRangeTokens(activeRange.openRaise || []);
+  const activeScenario = getBbDefenseScenario(activeRange, spotKey);
+  const rangeInfo = expandRangeTokens(activeRange.openRaise || activeScenario?.range || []);
   const selectedHand = selectedHandBySpot[spotKey] || (rangeInfo.hands.has("AA") ? "AA" : "AKs");
   selectedHandBySpot = {
     ...selectedHandBySpot,
@@ -331,18 +387,25 @@ export function renderRanges({ app, data }) {
       </div>
 
       ${renderLegend()}
+      ${renderBbScenarioSwitch(activeScenario)}
 
       <div class="range-matrix-layout">
         <div>
-          ${renderHandMatrix(activeRange, rangeInfo, selectedHand)}
+          ${renderHandMatrix(activeRange, rangeInfo, selectedHand, Boolean(activeRange.openRaise || activeScenario))}
         </div>
         <div class="range-side-panel">
-          ${renderHandDetail(activeRange, rangeInfo, selectedHand)}
-          ${renderShorthandGuide(activeRange.openRaise || [])}
+          ${renderHandDetail(activeRange, rangeInfo, selectedHand, activeScenario)}
+          ${renderShorthandGuide(activeRange.openRaise || activeScenario?.range || [])}
           <div class="range-block">
             <h4>${activeRange.position === "BB" ? "可防守方向" : "原始范围写法"}</h4>
             <div class="range-chip-row">${chips(activeRange.openRaise || activeRange.defend)}</div>
           </div>
+          ${activeScenario ? `
+            <div class="range-block">
+              <h4>当前场景基准</h4>
+              <div class="range-chip-row">${chips(activeScenario.range)}</div>
+            </div>
+          ` : ""}
           <div class="range-block">
             <h4>新人少碰</h4>
             <div class="range-chip-row is-warning">${chips(activeRange.avoid)}</div>
@@ -374,6 +437,16 @@ export function renderRanges({ app, data }) {
       selectedHandBySpot = {
         ...selectedHandBySpot,
         [spotKey]: button.dataset.handCell
+      };
+      renderRanges({ app, data });
+    });
+  });
+
+  app.querySelectorAll("[data-bb-defense-scenario]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedBbScenarioBySpot = {
+        ...selectedBbScenarioBySpot,
+        [spotKey]: button.dataset.bbDefenseScenario
       };
       renderRanges({ app, data });
     });
