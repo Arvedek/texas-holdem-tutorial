@@ -353,6 +353,34 @@
             && text.includes("常见桌型")
             && app.querySelectorAll("[data-range-table-size]").length === 6;
         }],
+        ["range page renders a 13x13 beginner hand matrix", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          const cells = app.querySelectorAll("[data-hand-cell]");
+          const text = app.textContent;
+          return cells.length === 169
+            && text.includes("13x13 起手牌矩阵")
+            && text.includes("颜色图例")
+            && app.querySelectorAll("[data-range-position]").length >= 4
+            && app.querySelector('[data-hand-cell="AA"]')
+            && app.querySelector('[data-hand-cell="AKs"]')
+            && app.querySelector('[data-hand-cell="AKo"]');
+        }],
+        ["range matrix explains shorthand and clicked hands", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          app.querySelector('[data-range-table-size="4-max"]').click();
+          app.querySelector('[data-range-position="CO"]').click();
+          const a7s = app.querySelector('[data-hand-cell="A7s"]');
+          const a6s = app.querySelector('[data-hand-cell="A6s"]');
+          a7s.click();
+          const text = app.textContent;
+          return a7s.dataset.rangeAction === "open"
+            && a6s.dataset.rangeAction === "fold"
+            && text.includes("A7s+ 表示 A7s、A8s")
+            && text.includes("A7s 在 4-max CO")
+            && text.includes("默认可以开池");
+        }],
         ["drills include short-handed and full-ring table contexts", () => {
           const text = drills.map((drill) => drill.prompt).join(" ");
           return ["4-max", "5-max", "7-max", "8-max", "9-max", "多人底池"].every((label) => text.includes(label));

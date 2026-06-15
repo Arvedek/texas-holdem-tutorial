@@ -1109,6 +1109,155 @@ textarea {
   text-align: center;
 }
 
+.range-matrix-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.range-matrix-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 420px);
+  gap: 16px;
+  align-items: start;
+}
+
+.range-matrix-top h2 {
+  margin: 0;
+}
+
+.range-position-switch {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  gap: 8px;
+}
+
+.range-matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 8px;
+  background: rgba(250, 247, 238, 0.62);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.range-matrix-legend strong {
+  color: var(--ink);
+}
+
+.range-matrix-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.legend-dot.is-premium {
+  background: #b53b2d;
+}
+
+.legend-dot.is-open {
+  background: #16724f;
+}
+
+.legend-dot.is-fold {
+  background: #d8d1c0;
+}
+
+.legend-dot.is-context {
+  background: #386b9a;
+}
+
+.range-matrix-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(260px, 340px);
+  gap: 16px;
+  align-items: start;
+}
+
+.range-matrix {
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+  gap: 3px;
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 1 / 1;
+}
+
+.hand-cell {
+  min-width: 0;
+  border: 1px solid rgba(28, 37, 31, 0.09);
+  border-radius: 6px;
+  color: var(--ink);
+  font-size: clamp(10px, 1.35vw, 13px);
+  font-weight: 850;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.hand-cell:hover,
+.hand-cell.is-selected {
+  transform: translateY(-1px);
+  border-color: rgba(28, 37, 31, 0.45);
+  box-shadow: 0 8px 18px rgba(28, 37, 31, 0.13);
+}
+
+.hand-cell.is-premium {
+  background: #b53b2d;
+  color: #fffaf2;
+}
+
+.hand-cell.is-open {
+  background: #16724f;
+  color: #f8fff9;
+}
+
+.hand-cell.is-fold {
+  background: #eee8d8;
+  color: #71695a;
+}
+
+.hand-cell.is-context {
+  background: #386b9a;
+  color: #f7fbff;
+}
+
+.range-side-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.range-hand-detail,
+.range-shorthand-guide {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 244, 0.78);
+}
+
+.range-hand-detail h3,
+.range-shorthand-guide h4 {
+  margin: 0;
+}
+
+.range-hand-detail p,
+.range-shorthand-guide p {
+  margin: 0;
+  line-height: 1.6;
+}
+
 .term-card,
 .range-card {
   display: grid;
@@ -1275,7 +1424,9 @@ textarea {
   .retention-grid,
   .daily-task-grid,
   .hero-panel,
-  .quick-actions {
+  .quick-actions,
+  .range-matrix-top,
+  .range-matrix-layout {
     grid-template-columns: 1fr;
   }
 
@@ -1305,5 +1456,15 @@ textarea {
 
   .lesson-stage {
     min-height: auto;
+  }
+
+  .range-matrix {
+    max-width: 100%;
+    gap: 2px;
+  }
+
+  .hand-cell {
+    border-radius: 4px;
+    font-size: 10px;
   }
 }
