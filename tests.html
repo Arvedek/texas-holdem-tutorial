@@ -275,6 +275,26 @@
           app.querySelector("[data-lesson-term-search]").click();
           return target === glossaryTerms.find((term) => term.id === lessons[0].relatedTerms[0]).term;
         }],
+        ["learning path renders chapter directory with current recommendation", () => {
+          const app = document.createElement("div");
+          renderLearning({
+            app,
+            state: normalizeState({ beginnerMode: true, completedLessons: [lessons[0].id, lessons[1].id] }),
+            setState: () => {},
+            data: { lessons, glossaryTerms },
+            navigate: () => {}
+          });
+          const directoryButtons = [...app.querySelectorAll("[data-lesson-jump]")];
+          const currentButton = app.querySelector("[data-lesson-jump].is-current");
+          const completedButtons = app.querySelectorAll("[data-lesson-jump].is-complete");
+          const text = app.textContent;
+          return directoryButtons.length === 18
+            && completedButtons.length === 2
+            && currentButton?.dataset.lessonJump === lessons[2].id
+            && text.includes("章节目录")
+            && text.includes("当前建议")
+            && text.includes("已完成 2/18");
+        }],
         ["glossary can receive an external search query", () => {
           const app = document.createElement("div");
           setGlossarySearch("SPR");

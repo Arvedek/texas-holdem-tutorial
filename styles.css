@@ -491,6 +491,51 @@ h1 {
   gap: 14px;
 }
 
+.chapter-directory {
+  display: grid;
+  gap: 14px;
+}
+
+.chapter-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.chapter-jump {
+  display: grid;
+  min-height: 92px;
+  align-content: start;
+  gap: 6px;
+  padding: 12px;
+  text-align: left;
+  border: 1px solid rgba(124, 115, 96, 0.24);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.chapter-jump:hover,
+.chapter-jump.is-current {
+  border-color: var(--felt);
+  background: rgba(15, 90, 67, 0.08);
+}
+
+.chapter-jump.is-complete {
+  border-color: rgba(15, 90, 67, 0.24);
+  background: rgba(15, 90, 67, 0.055);
+}
+
+.chapter-jump span,
+.chapter-jump small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chapter-jump strong {
+  line-height: 1.35;
+}
+
 .lesson-card {
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr);

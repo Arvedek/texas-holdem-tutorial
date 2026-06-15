@@ -161,6 +161,40 @@ function hasQuizSelection(lesson) {
   });
 }
 
+function renderChapterDirectory(lessons, completed) {
+  const currentLesson = lessons.find((lesson) => !completed.has(lesson.id)) || lessons[lessons.length - 1];
+  const completedCount = lessons.filter((lesson) => completed.has(lesson.id)).length;
+
+  return `
+    <section class="panel chapter-directory">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Chapter Map</p>
+          <h3>章节目录</h3>
+          <p class="muted">已完成 ${completedCount}/${lessons.length} · 当前建议：第 ${escapeHtml(currentLesson.stage)} 章 ${escapeHtml(currentLesson.title)}</p>
+        </div>
+        <span class="tag ${completedCount === lessons.length ? "" : "is-soft"}">${completedCount === lessons.length ? "全部完成" : "当前建议"}</span>
+      </div>
+      <div class="chapter-directory-grid">
+        ${lessons.map((lesson) => {
+          const isComplete = completed.has(lesson.id);
+          const isCurrent = lesson.id === currentLesson.id;
+          return `
+            <button
+              class="chapter-jump ${isComplete ? "is-complete" : ""} ${isCurrent ? "is-current" : ""}"
+              data-lesson-jump="${escapeAttribute(lesson.id)}"
+            >
+              <span>第 ${escapeHtml(lesson.stage)} 章</span>
+              <strong>${escapeHtml(lesson.title)}</strong>
+              <small>${isComplete ? "已完成" : isCurrent ? "当前建议" : lesson.difficulty}</small>
+            </button>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function textbookPanel(lesson, completed, glossaryTerms) {
   const panelOpen = !completed || hasQuizSelection(lesson);
 
@@ -241,6 +275,8 @@ export function renderLearning({ app, state, setState, data, navigate, openGloss
         <span style="width:${completionRate}%"></span>
       </div>
     </section>
+
+    ${renderChapterDirectory(data.lessons, completed)}
 
     <section class="lesson-list">
       ${data.lessons.map((lesson) => {
@@ -329,6 +365,12 @@ export function renderLearning({ app, state, setState, data, navigate, openGloss
         [key]: button.dataset.quizAnswer
       };
       renderLearning({ app, state, setState, data, navigate, openGlossarySearch });
+    });
+  });
+
+  app.querySelectorAll("[data-lesson-jump]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelector(`[data-lesson-id="${CSS.escape(button.dataset.lessonJump)}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
     });
   });
 
