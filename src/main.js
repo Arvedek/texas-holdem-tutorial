@@ -13,7 +13,7 @@ import { renderMistakes } from "./features/mistakes.js";
 import { renderReview } from "./features/review.js";
 import { renderResources } from "./features/resources.js";
 import { renderGlossary, setGlossarySearch } from "./features/glossary.js";
-import { renderRanges } from "./features/ranges.js";
+import { renderRanges } from "./features/ranges.js?v=d9b5036";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");
