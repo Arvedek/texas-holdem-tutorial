@@ -1,5 +1,13 @@
 import { BADGES, calculateMastery, calculateStreak, getDailyTasks, getLevel } from "../lib/rewards.js";
 import { escapeHtml } from "../lib/sanitize.js";
+import { drillTypes } from "../data/drills.js";
+
+const TYPE_LESSON_IDS = {
+  preflop: ["starting-hands-range-thinking", "open-limp-isolate-call-fold", "three-bet-four-bet-squeeze"],
+  odds: ["equity-outs-odds-realization", "spr-stack-depth-commitment"],
+  board: ["board-texture-reading", "relative-hand-strength", "multiway-pots"],
+  decision: ["bet-purpose-sizing", "cbet-probe-donk-checkraise", "hand-review-study-routine"]
+};
 
 const BADGE_LABELS = {
   [BADGES.FIRST_LESSON]: "第一课完成",
@@ -29,13 +37,72 @@ function getTopErrorTypes(reviews) {
     .slice(0, 4);
 }
 
-function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson }) {
+function getDrillById(drills) {
+  return new Map(drills.map((drill) => [drill.id, drill]));
+}
+
+function getDominantMistakeType(unresolvedMistakes, drills) {
+  const drillById = getDrillById(drills);
+  const counts = unresolvedMistakes.reduce((acc, mistake) => {
+    const type = drillById.get(mistake.questionId)?.type;
+    if (type) {
+      acc[type] = (acc[type] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const [type, count] = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1] || (drillTypes[a[0]] || a[0]).localeCompare(drillTypes[b[0]] || b[0], "zh-CN"))
+    [0] || [];
+
+  return type ? { type, count, label: drillTypes[type] || type } : null;
+}
+
+function getWeakestTrainingType(attempts, drills) {
+  const drillById = getDrillById(drills);
+  const rows = Object.entries(attempts.reduce((acc, attempt) => {
+    const type = drillById.get(attempt.questionId)?.type;
+    if (!type) {
+      return acc;
+    }
+    acc[type] = acc[type] || { type, total: 0, correct: 0 };
+    acc[type].total += 1;
+    acc[type].correct += attempt.correct ? 1 : 0;
+    return acc;
+  }, {})).map(([, row]) => ({
+    ...row,
+    accuracy: Math.round((row.correct / row.total) * 100),
+    label: drillTypes[row.type] || row.type
+  }));
+
+  return rows
+    .filter((row) => row.total >= 2 && row.accuracy < 80)
+    .sort((a, b) => a.accuracy - b.accuracy || b.total - a.total || a.label.localeCompare(b.label, "zh-CN"))
+    [0] || null;
+}
+
+function getTypeLesson(type, lessons, completed) {
+  const candidates = TYPE_LESSON_IDS[type] || [];
+  return candidates
+    .map((id) => lessons.find((lesson) => lesson.id === id))
+    .find((lesson) => lesson && !completed.has(lesson.id))
+    || candidates.map((id) => lessons.find((lesson) => lesson.id === id)).find(Boolean)
+    || null;
+}
+
+function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson, lessons, drills, completed }) {
+  const mistakeFocus = getDominantMistakeType(unresolvedMistakes, drills);
   if (unresolvedMistakes.length) {
+    const focusLesson = mistakeFocus ? getTypeLesson(mistakeFocus.type, lessons, completed) : null;
     return {
-      title: "先清理错题本",
-      body: `你还有 ${unresolvedMistakes.length} 道未掌握错题。先复盘错误，比继续刷题更划算。`,
+      title: mistakeFocus ? `先补${mistakeFocus.label}错题` : "先清理错题本",
+      body: mistakeFocus
+        ? `错题集中在 ${mistakeFocus.label}：${mistakeFocus.count}/${unresolvedMistakes.length} 道未掌握。先打开错题本复盘，再回到${focusLesson?.title || "对应章节"}巩固。`
+        : `你还有 ${unresolvedMistakes.length} 道未掌握错题。先复盘错误，比继续刷题更划算。`,
       action: "go-mistakes",
-      cta: "打开错题本"
+      cta: "打开错题本",
+      drillType: mistakeFocus?.type || null,
+      lessonId: focusLesson?.id || null
     };
   }
 
@@ -44,7 +111,9 @@ function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson }
       title: "先做一组训练",
       body: "你还没有训练记录。先做几题，系统才能知道你的薄弱点。",
       action: "go-training",
-      cta: "开始训练"
+      cta: "开始训练",
+      drillType: null,
+      lessonId: null
     };
   }
 
@@ -53,7 +122,22 @@ function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson }
       title: "保存第一条复盘",
       body: "训练能校准直觉，复盘才能找到真实牌局里的漏洞。",
       action: "go-review",
-      cta: "写复盘"
+      cta: "写复盘",
+      drillType: null,
+      lessonId: null
+    };
+  }
+
+  const weakType = getWeakestTrainingType(attempts, drills);
+  if (weakType) {
+    const focusLesson = getTypeLesson(weakType.type, lessons, completed);
+    return {
+      title: `薄弱训练：${weakType.label}`,
+      body: `${weakType.label} 最近 ${weakType.total} 题准确率 ${weakType.accuracy}%。今天先练这一类，再读${focusLesson?.title || "对应章节"}，比平均刷题更有效。`,
+      action: "go-training",
+      cta: `练 ${weakType.label}`,
+      drillType: weakType.type,
+      lessonId: focusLesson?.id || null
     };
   }
 
@@ -61,7 +145,9 @@ function getRecommendation({ unresolvedMistakes, attempts, reviews, nextLesson }
     title: "继续下一课",
     body: `下一节建议学习：${nextLesson.title}。学完后做对应训练题巩固。`,
     action: "go-learning",
-    cta: "继续学习"
+    cta: "继续学习",
+    drillType: null,
+    lessonId: nextLesson.id
   };
 }
 
@@ -113,7 +199,6 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
   const recentAccuracy = getAccuracy(attempts.slice(-10));
   const unresolvedMistakes = state.savedMistakes.filter((mistake) => mistake.status !== "mastered");
   const recentReviews = [...state.handReviews].slice(-3).reverse();
-  const suggestedDrills = drills.filter((drill) => nextLesson.drillTags.some((tag) => drill.tags.includes(tag))).slice(0, 4);
   const completionRate = Math.round((completed.size / lessons.length) * 100);
   const topErrorTypes = getTopErrorTypes(state.handReviews);
   const level = getLevel(state.xp);
@@ -125,8 +210,16 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
     unresolvedMistakes,
     attempts,
     reviews: state.handReviews,
-    nextLesson
+    nextLesson,
+    lessons,
+    drills,
+    completed
   });
+  const recommendationLesson = lessons.find((lesson) => lesson.id === recommendation.lessonId) || nextLesson;
+  const suggestedDrills = (recommendation.drillType
+    ? drills.filter((drill) => drill.type === recommendation.drillType)
+    : drills.filter((drill) => recommendationLesson.drillTags.some((tag) => drill.tags.includes(tag)))
+  ).slice(0, 4);
 
   app.innerHTML = `
     <div class="dashboard-grid">

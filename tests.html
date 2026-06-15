@@ -27,6 +27,7 @@
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { renderLearning } from "./src/features/learning.js";
+      import { renderDashboard } from "./src/features/dashboard.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js";
       import { renderReview } from "./src/features/review.js";
@@ -362,6 +363,49 @@
           const select = app.querySelector('select[name="tableFormat"]');
           const values = [...select.options].map((item) => item.value);
           return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => values.includes(label));
+        }],
+        ["dashboard recommendation identifies the dominant unresolved mistake type", () => {
+          const app = document.createElement("div");
+          renderDashboard({
+            app,
+            state: normalizeState({
+              savedMistakes: [
+                { questionId: "pf-001", status: "unresolved", wrongAnswers: ["跟注"] },
+                { questionId: "pf-002", status: "unresolved", wrongAnswers: ["弃牌"] }
+              ]
+            }),
+            setState: () => {},
+            data: { lessons, drills },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return text.includes("翻前范围")
+            && text.includes("错题集中")
+            && app.querySelector('[data-action="go-mistakes"]');
+        }],
+        ["dashboard recommendation targets the weakest trained drill type", () => {
+          const app = document.createElement("div");
+          renderDashboard({
+            app,
+            state: normalizeState({
+              completedLessons: [lessons[0].id],
+              handReviews: [{ id: "r1", heroHand: "As Ks", errorTypes: [], createdAt: "2026-06-13T00:00:00Z" }],
+              drillAttempts: [
+                { questionId: "pf-001", correct: true },
+                { questionId: "pf-002", correct: true },
+                { questionId: "od-001", correct: false },
+                { questionId: "od-002", correct: false },
+                { questionId: "od-003", correct: true }
+              ]
+            }),
+            setState: () => {},
+            data: { lessons, drills },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return text.includes("赔率与 outs")
+            && text.includes("薄弱训练")
+            && app.querySelector('[data-action="go-training"]');
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});
