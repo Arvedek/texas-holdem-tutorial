@@ -412,6 +412,63 @@ h1 {
   gap: 16px;
 }
 
+.coach-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.coach-task-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.coach-task {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 178px;
+  padding: 14px;
+  text-align: left;
+  color: var(--ink);
+  border: 1px solid rgba(15, 90, 67, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.coach-task:hover {
+  border-color: rgba(15, 90, 67, 0.45);
+  background: #fff;
+}
+
+.coach-task span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: #fff;
+  border-radius: 50%;
+  background: var(--felt);
+  font-weight: 800;
+}
+
+.coach-task small {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.coach-task em {
+  align-self: end;
+  color: var(--felt);
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.coach-feedback {
+  margin-bottom: 0;
+}
+
 .level-panel .section-heading strong {
   color: var(--felt);
   font-size: 24px;
@@ -1710,6 +1767,7 @@ textarea {
   .grid.two,
   .grid.three,
   .retention-grid,
+  .coach-task-grid,
   .daily-task-grid,
   .diagnostic-form,
   .diagnostic-days,

@@ -1,6 +1,7 @@
 import { BADGES, calculateMastery, calculateStreak, getDailyTasks, getLevel } from "../lib/rewards.js";
 import { escapeHtml } from "../lib/sanitize.js";
 import { diagnosticOptions, generateStarterPlan } from "../lib/diagnosticPlan.js";
+import { buildCoachQueue } from "../lib/coachAdvisor.js";
 import { drillTypes } from "../data/drills.js";
 
 const TYPE_LESSON_IDS = {
@@ -253,7 +254,38 @@ function renderDiagnostic(profile, lessons, drills) {
   `;
 }
 
-export function renderDashboard({ app, state, setState, data, navigate }) {
+function renderCoachQueue(queue) {
+  return `
+    <section class="panel coach-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Coach Queue</p>
+          <h3>今日教练队列</h3>
+        </div>
+        <span class="tag is-soft">10-20 分钟闭环</span>
+      </div>
+      <div class="coach-task-grid">
+        ${queue.map((task, index) => `
+          <button
+            class="coach-task"
+            type="button"
+            data-coach-task="${index + 1}"
+            data-coach-route="${escapeHtml(task.route)}"
+            data-coach-question="${escapeHtml(task.questionId || "")}"
+          >
+            <span>${index + 1}</span>
+            <strong>${escapeHtml(task.title)}</strong>
+            <small>${escapeHtml(task.body)}</small>
+            <em>${escapeHtml(task.cta)} · ${task.minutes} 分钟</em>
+          </button>
+        `).join("")}
+      </div>
+      <p class="muted coach-feedback">正反馈：完成任何一个小任务都算推进。新人阶段先追求“看见漏洞并修正一次”，不要追求每题都完美。</p>
+    </section>
+  `;
+}
+
+export function renderDashboard({ app, state, setState, data, navigate, openTrainingQuestion }) {
   const { lessons, drills } = data;
   const completed = new Set(state.completedLessons);
   const nextLesson = lessons.find((lesson) => !completed.has(lesson.id)) || lessons[lessons.length - 1];
@@ -278,6 +310,7 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
     completed
   });
   const recommendationLesson = lessons.find((lesson) => lesson.id === recommendation.lessonId) || nextLesson;
+  const coachQueue = buildCoachQueue(state, lessons, drills);
   const suggestedDrills = (recommendation.drillType
     ? drills.filter((drill) => drill.type === recommendation.drillType)
     : drills.filter((drill) => recommendationLesson.drillTags.some((tag) => drill.tags.includes(tag)))
@@ -302,6 +335,8 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
           <span>学习进度</span>
         </div>
       </section>
+
+      ${renderCoachQueue(coachQueue)}
 
       <section class="retention-grid">
         <article class="panel level-panel">
@@ -466,6 +501,18 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
   app.querySelectorAll("[data-action]").forEach((button) => {
     button.addEventListener("click", () => {
       const route = button.dataset.action.replace("go-", "");
+      navigate(route);
+    });
+  });
+
+  app.querySelectorAll("[data-coach-task]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const route = button.dataset.coachRoute;
+      const questionId = button.dataset.coachQuestion;
+      if (route === "training" && questionId && openTrainingQuestion) {
+        openTrainingQuestion(questionId);
+        return;
+      }
       navigate(route);
     });
   });

@@ -24,6 +24,7 @@
       import { evaluateHoldemHand } from "./src/lib/handEvaluator.js?v=coach-20260616";
       import { generateStarterPlan } from "./src/lib/diagnosticPlan.js?v=diagnostic-20260616";
       import { analyzeMistakeLeaks } from "./src/lib/leakAnalyzer.js?v=leaks-20260617";
+      import { buildCoachQueue } from "./src/lib/coachAdvisor.js?v=coach-queue-20260617";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js?v=coach-links-20260616";
@@ -31,7 +32,7 @@
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js?v=coach-20260616";
       import { renderLearning } from "./src/features/learning.js";
-      import { renderDashboard } from "./src/features/dashboard.js?v=diagnostic-20260616";
+      import { renderDashboard } from "./src/features/dashboard.js?v=coach-queue-20260617";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
       import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
@@ -662,6 +663,55 @@
             && text.includes("纠正训练")
             && app.querySelectorAll("[data-leak-card]").length >= 2
             && targetQuestion.length > 0;
+        }],
+        ["coach queue prioritizes the biggest leak and gives concrete practice", () => {
+          const queue = buildCoachQueue(normalizeState({
+            savedMistakes: [
+              { questionId: "pf-001", status: "unresolved", wrongAnswers: ["跟注"] },
+              { questionId: "pf-009", status: "unresolved", wrongAnswers: ["冷跟"] },
+              { questionId: "od-006", status: "unresolved", wrongAnswers: ["轻松跟注"] }
+            ],
+            diagnosticProfile: {
+              experience: "new",
+              tableSize: "9-max",
+              focus: "preflop"
+            }
+          }), lessons, drills);
+          return queue.length >= 3
+            && queue[0].kind === "leak"
+            && queue[0].title.includes("翻前纪律")
+            && queue[0].route === "mistakes"
+            && queue.some((item) => item.route === "training" && item.questionId);
+        }],
+        ["dashboard renders a coach queue with actionable next tasks", () => {
+          const app = document.createElement("div");
+          const routes = [];
+          renderDashboard({
+            app,
+            state: normalizeState({
+              savedMistakes: [
+                { questionId: "pf-001", status: "unresolved", wrongAnswers: ["跟注"] },
+                { questionId: "pf-009", status: "unresolved", wrongAnswers: ["冷跟"] }
+              ],
+              diagnosticProfile: {
+                experience: "new",
+                tableSize: "9-max",
+                focus: "preflop"
+              }
+            }),
+            setState: () => {},
+            data: { lessons, drills },
+            navigate: (route) => {
+              routes.push(route);
+            }
+          });
+          const firstTask = app.querySelector("[data-coach-task]");
+          firstTask.click();
+          const text = app.textContent;
+          return text.includes("今日教练队列")
+            && text.includes("正反馈")
+            && app.querySelectorAll("[data-coach-task]").length >= 3
+            && routes.includes("mistakes");
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});
