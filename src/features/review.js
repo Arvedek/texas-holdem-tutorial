@@ -1,6 +1,7 @@
 import { parseCards, hasDuplicateCards, formatCard } from "../lib/cards.js";
 import { calculatePotOdds, calculateSpr, classifyStartingHand } from "../lib/pokerMath.js";
 import { analyzeBoardTexture } from "../lib/boardTexture.js";
+import { evaluateHoldemHand } from "../lib/handEvaluator.js";
 import { BADGES, awardBadge, awardXp, markDailyActivity, maybeAwardDailyBonus } from "../lib/rewards.js";
 import { escapeHtml, escapeAttribute } from "../lib/sanitize.js";
 
@@ -82,6 +83,9 @@ function analyze(form) {
   const spr = calculateSpr(stack, potSize);
   const texture = boardParsed.ok ? analyzeBoardTexture(boardParsed.cards) : analyzeBoardTexture([]);
   const handClass = heroParsed.ok && heroParsed.cards.length === 2 ? classifyStartingHand(heroParsed.cards[0], heroParsed.cards[1]) : null;
+  const handEvaluation = heroParsed.ok && heroParsed.cards.length === 2 && boardParsed.ok
+    ? evaluateHoldemHand(heroParsed.cards, boardParsed.cards)
+    : null;
   const decisionLabel = errors.length ? "输入待修正" : spr !== null && spr <= 3 ? "高承诺度" : texture.wetness === "wet" ? "风险高" : "标准";
 
   return {
@@ -92,16 +96,29 @@ function analyze(form) {
     spr,
     texture,
     handClass,
+    handEvaluation,
     decisionLabel
   };
 }
 
 function renderAnalysis(analysis) {
+  const handEvaluation = analysis.handEvaluation;
   return `
     <div class="analysis-grid">
       <div class="metric"><span class="muted">底池赔率</span><strong>${percentage(analysis.potOdds)}</strong></div>
       <div class="metric"><span class="muted">SPR</span><strong>${numberLabel(analysis.spr)}</strong></div>
       <div class="metric"><span class="muted">决策标签</span><strong>${escapeHtml(analysis.decisionLabel)}</strong></div>
+    </div>
+    <div class="card hand-evaluator" data-hand-evaluator>
+      <p class="eyebrow">手牌判断器</p>
+      <h3>当前牌力：${escapeHtml(handEvaluation?.madeHand.label || "信息不足")}</h3>
+      <p>${escapeHtml(handEvaluation?.madeHand.detail || "输入两张手牌和公共牌后，会自动显示当前牌型。")}</p>
+      <div class="analysis-grid">
+        <div class="metric"><span class="muted">听牌 / outs</span><strong>${handEvaluation ? handEvaluation.outs : 0}</strong></div>
+        <div class="metric"><span class="muted">主要听牌</span><strong>${escapeHtml(handEvaluation?.draws.map((draw) => draw.label).join(" / ") || "无")}</strong></div>
+        <div class="metric"><span class="muted">建议</span><strong>${escapeHtml(handEvaluation?.draws.length ? "算价格" : "控风险")}</strong></div>
+      </div>
+      <p class="muted">${escapeHtml(handEvaluation?.recommendation || "先修正输入，再判断牌力和听牌。")}</p>
     </div>
     ${analysis.errors.length ? `
       <div class="alert">
@@ -283,7 +300,9 @@ export function renderReview({ app, state, setState }) {
               potOdds: nextAnalysis.potOdds,
               spr: nextAnalysis.spr,
               decisionLabel: nextAnalysis.decisionLabel,
-              textureLabels: nextAnalysis.texture.labels
+              textureLabels: nextAnalysis.texture.labels,
+              madeHand: nextAnalysis.handEvaluation?.madeHand.label || "",
+              drawOuts: nextAnalysis.handEvaluation?.outs || 0
             },
             notes: form.opponentNotes,
             tags: [...nextAnalysis.texture.labels, ...(form.errorTypes || [])],

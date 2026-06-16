@@ -34,7 +34,20 @@ export const drills = [
     options: ["弃牌", "冷跟", "3-bet", "最小跟注"],
     answer: "3-bet",
     explanation: "AQs 对 CO 开池范围有明显价值和阻断效果，BTN 位置也利于施压。",
-    tags: ["preflop", "3bet"]
+    tags: ["preflop", "3bet"],
+    situation: {
+      title: "面对 CO open 的 BTN 决策",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "BTN · AQs",
+      villain: "CO open 2.5bb",
+      actionLine: "前面弃牌，CO 开池到 2.5bb，Hero 在 BTN 行动，盲位待行动。"
+    },
+    learningLinks: [
+      { label: "3-bet", note: "复习 3-bet 的价值、阻断和位置优势。" },
+      { label: "position", note: "有位置时可以更好实现权益，但不能无脑跟注。" },
+      { label: "range", note: "用范围比较，而不是只看 AQs 这四个字符。" }
+    ]
   },
   {
     id: "pf-004",
@@ -305,5 +318,103 @@ export const drills = [
     answer: "多半过牌放弃",
     explanation: "多人湿润牌面命中跟注范围很多，AK 无后门很难让两名对手都弃牌，下注频率应下降。",
     tags: ["decision", "multiway"]
+  },
+  {
+    id: "st-001",
+    type: "decision",
+    level: "入门",
+    prompt: "BTN open，BB call。翻牌 A72 彩虹，Hero 在 BTN 持 KQo。默认下注计划？",
+    options: ["小额 c-bet", "超池 all-in", "永远放弃", "只下满池"],
+    answer: "小额 c-bet",
+    explanation: "A 高干燥面有范围优势，小额 c-bet 能攻击大量未击中组合，同时风险较低。",
+    tags: ["decision", "cbet", "range-advantage"],
+    situation: {
+      title: "范围优势高频小注",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "BTN · KQo",
+      villain: "BB 防守",
+      board: "A72 rainbow",
+      pot: "5.5bb",
+      actionLine: "BTN open 2.5bb，BB call；翻牌 BB check，Hero 行动。"
+    },
+    learningLinks: [
+      { label: "c-bet", note: "复习哪些牌面适合高频小额持续下注。" },
+      { label: "range advantage", note: "先判断整体范围优势，再决定下注频率。" }
+    ]
+  },
+  {
+    id: "st-002",
+    type: "decision",
+    level: "入门",
+    prompt: "你在 BB 防守，翻牌 Q84 两同花，持 Q7o 面对 BTN 1/3 pot c-bet。默认？",
+    options: ["跟注", "直接弃牌", "必然 check-raise", "超池 donk"],
+    answer: "跟注",
+    explanation: "顶对弱踢脚面对小注通常有继续价值，但不适合立刻把底池做大。",
+    tags: ["decision", "defense", "relative-hand-strength"],
+    situation: {
+      title: "顶对弱踢脚的底池控制",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "BB · Q7o",
+      villain: "BTN c-bet 1/3 pot",
+      board: "Q84 two-tone",
+      pot: "5.5bb",
+      facing: "1.8bb",
+      actionLine: "BTN open，BB call；翻牌 BB check，BTN 小额下注。"
+    },
+    learningLinks: [
+      { label: "relative hand strength", note: "顶对不是自动三条街价值，要看踢脚和对手范围。" },
+      { label: "pot control", note: "中强牌常用跟注控制底池。" }
+    ]
+  },
+  {
+    id: "st-003",
+    type: "odds",
+    level: "初中级",
+    prompt: "转牌你有坚果同花听牌 9 outs，底池 100，对手下注 75。默认需要什么？",
+    options: ["直接看赔率和隐含赔率", "任何时候秒跟", "永远弃牌", "不算价格全下"],
+    answer: "直接看赔率和隐含赔率",
+    explanation: "转牌 9 outs 到河牌约 18%，面对 75% pot 需要约 30% 直接胜率，通常要靠隐含赔率或加注弃牌率补足。",
+    tags: ["odds", "outs", "flush-draw"],
+    situation: {
+      title: "转牌听牌价格",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "A♠ K♠",
+      board: "Q♠ J♠ 2♦ 7♣",
+      pot: "100",
+      facing: "75",
+      actionLine: "翻牌半诈唬被跟，转牌未中，对手领先下注 75。"
+    },
+    learningLinks: [
+      { label: "outs", note: "先数 outs，再估算权益。" },
+      { label: "pot odds", note: "价格不够时要看隐含赔率或弃牌率。" }
+    ]
+  },
+  {
+    id: "st-004",
+    type: "decision",
+    level: "初中级",
+    prompt: "河牌你只有 bluff-catcher，对手是低频诈唬紧手，突然 1.5 倍池下注。默认？",
+    options: ["大多弃牌", "必须 MDF 跟注", "永远加注", "随机点击"],
+    answer: "大多弃牌",
+    explanation: "MDF 是理论防守参考，不是面对低诈唬玩家的硬规则。对紧手超池下注，新手默认过度抓诈会烧钱。",
+    tags: ["decision", "bluff-catch", "exploit"],
+    situation: {
+      title: "河牌抓诈纪律",
+      tableSize: "9-max",
+      stack: "120bb",
+      hero: "一对",
+      villain: "紧手河牌超池",
+      board: "K J 8 4 2",
+      pot: "80",
+      facing: "120",
+      actionLine: "你 check，对手河牌突然 1.5 倍池下注。"
+    },
+    learningLinks: [
+      { label: "bluff-catch", note: "抓诈要看对手是否真的有足够诈唬。" },
+      { label: "exploit", note: "对低诈唬玩家可以偏离理论多弃。" }
+    ]
   }
 ];

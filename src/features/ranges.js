@@ -1,9 +1,12 @@
 import { escapeAttribute, escapeHtml } from "../lib/sanitize.js";
+import { choosePreflopResponse, preflopResponseSpots } from "../data/preflopResponses.js";
 
 let selectedTableSize = "6-max";
 let selectedPositionByTable = {};
 let selectedHandBySpot = {};
 let selectedBbScenarioBySpot = {};
+let selectedResponseSpotId = "co-open-btn";
+let responseHand = "AQs";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 const PREMIUM_HANDS = new Set(["AA", "KK", "QQ", "JJ", "TT", "AKs", "AKo", "AQs"]);
@@ -377,6 +380,49 @@ function renderBbScenarioSwitch(activeScenario) {
   `;
 }
 
+function renderPreflopResponseGuide() {
+  const activeSpot = preflopResponseSpots.find((spot) => spot.id === selectedResponseSpotId) || preflopResponseSpots[0];
+  const response = choosePreflopResponse(activeSpot.tableSize, activeSpot.opener, activeSpot.hero, responseHand);
+
+  return `
+    <section class="panel preflop-response-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Facing Open</p>
+          <h2>面对开池决策</h2>
+          <p class="muted">先选常见局面，再输入起手牌。这里给的是新手默认方向：3-bet、跟注或弃牌。</p>
+        </div>
+      </div>
+      <div class="response-spot-switch">
+        ${preflopResponseSpots.map((spot) => `
+          <button class="chip-button ${spot.id === activeSpot.id ? "is-active" : ""}" data-preflop-response-spot="${escapeAttribute(spot.id)}">
+            ${escapeHtml(spot.title)}
+          </button>
+        `).join("")}
+      </div>
+      <div class="response-grid">
+        <label>输入手牌
+          <input data-preflop-response-hand value="${escapeAttribute(responseHand)}" placeholder="AQs / JJ / A5s">
+        </label>
+        <div class="decision-result" data-preflop-response-action>
+          <span>${escapeHtml(activeSpot.tableSize)} · 我在 ${escapeHtml(activeSpot.hero)} · 对手 ${escapeHtml(activeSpot.opener)} 开池</span>
+          <strong>${escapeHtml(response.hand || "输入手牌")}：${escapeHtml(response.action)}</strong>
+          <p>${escapeHtml(response.reason)}</p>
+        </div>
+      </div>
+      <div class="range-block">
+        <h4>这个局面的基础范围</h4>
+        <div class="range-chip-row">
+          <span class="range-chip">价值 3-bet：${escapeHtml(activeSpot.value3Bet.join(", "))}</span>
+          <span class="range-chip">低频 3-bet：${escapeHtml(activeSpot.bluff3Bet.join(", "))}</span>
+          <span class="range-chip">可跟注：${escapeHtml(activeSpot.call.join(", "))}</span>
+        </div>
+      </div>
+      <p class="muted">${escapeHtml(activeSpot.context)}</p>
+    </section>
+  `;
+}
+
 export function renderRanges({ app, data }) {
   const ranges = data.preflopRanges || [];
   const tableSizes = [...new Set(ranges.map((item) => item.tableSize))];
@@ -424,6 +470,8 @@ export function renderRanges({ app, data }) {
       </div>
       <p class="muted">当前显示 ${escapeHtml(activeTableSize)}，共 ${positionCount} 个位置。这里是新人默认参考，不是死表；先减少翻前大错，再根据桌况、抽水和对手调整。</p>
     </section>
+
+    ${renderPreflopResponseGuide()}
 
     <section class="panel range-matrix-panel">
       <div class="range-matrix-top">
@@ -489,6 +537,18 @@ export function renderRanges({ app, data }) {
       };
       renderRanges({ app, data });
     });
+  });
+
+  app.querySelectorAll("[data-preflop-response-spot]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedResponseSpotId = button.dataset.preflopResponseSpot;
+      renderRanges({ app, data });
+    });
+  });
+
+  app.querySelector("[data-preflop-response-hand]")?.addEventListener("input", (event) => {
+    responseHand = event.target.value.trim();
+    renderRanges({ app, data });
   });
 
   app.querySelectorAll("[data-hand-cell]").forEach((button) => {

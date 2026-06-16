@@ -890,6 +890,49 @@ h1 {
   gap: 18px;
 }
 
+.situation-card,
+.learning-link-panel,
+.decision-result {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(124, 115, 96, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 244, 0.76);
+}
+
+.situation-card h3,
+.learning-link-panel p,
+.decision-result p {
+  margin: 0;
+}
+
+.situation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.situation-grid div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(15, 90, 67, 0.07);
+}
+
+.situation-grid span,
+.decision-result span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.situation-grid strong,
+.decision-result strong {
+  color: var(--ink);
+}
+
 .question-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1107,6 +1150,40 @@ textarea {
 
 .range-table-switch .chip-button {
   text-align: center;
+}
+
+.preflop-response-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.response-spot-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.response-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.response-grid label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.response-grid input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
 }
 
 .range-matrix-panel {
@@ -1593,7 +1670,8 @@ textarea {
 
   .range-table-switch,
   .range-position-switch,
-  .bb-scenario-buttons {
+  .bb-scenario-buttons,
+  .response-spot-switch {
     display: flex;
     gap: 8px;
     width: 100%;
@@ -1607,11 +1685,23 @@ textarea {
 
   .range-table-switch .chip-button,
   .range-position-switch .chip-button,
-  .bb-scenario-buttons .chip-button {
+  .bb-scenario-buttons .chip-button,
+  .response-spot-switch .chip-button {
     flex: 0 0 auto;
     min-width: max-content;
     padding: 9px 11px;
     white-space: nowrap;
+  }
+
+  .response-grid,
+  .situation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .situation-card,
+  .learning-link-panel,
+  .decision-result {
+    padding: 12px;
   }
 
   .range-matrix-panel {

@@ -1,5 +1,5 @@
 import { lessons } from "./data/lessons.js";
-import { drills } from "./data/drills.js";
+import { drills } from "./data/drills.js?v=coach-20260616";
 import { resources } from "./data/resources.js";
 import { glossaryTerms } from "./data/glossary.js";
 import { preflopRanges } from "./data/preflopRanges.js";
@@ -8,12 +8,12 @@ import { createExportEnvelope, createImportPreview, downloadJson, validateImport
 import { escapeHtml } from "./lib/sanitize.js";
 import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
-import { renderTraining } from "./features/training.js";
+import { renderTraining } from "./features/training.js?v=coach-20260616";
 import { renderMistakes } from "./features/mistakes.js";
-import { renderReview } from "./features/review.js";
+import { renderReview } from "./features/review.js?v=coach-20260616";
 import { renderResources } from "./features/resources.js";
 import { renderGlossary, setGlossarySearch } from "./features/glossary.js";
-import { renderRanges } from "./features/ranges.js?v=range-stats-20260616";
+import { renderRanges } from "./features/ranges.js?v=coach-20260616";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");

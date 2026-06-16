@@ -21,11 +21,13 @@
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
+      import { evaluateHoldemHand } from "./src/lib/handEvaluator.js";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js";
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
+      import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js";
       import { renderLearning } from "./src/features/learning.js";
       import { renderDashboard } from "./src/features/dashboard.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
@@ -438,6 +440,56 @@
           const select = app.querySelector('select[name="tableFormat"]');
           const values = [...select.options].map((item) => item.value);
           return ["4-max", "5-max", "6-max", "7-max", "8-max", "9-max"].every((label) => values.includes(label));
+        }],
+        ["hand evaluator identifies made hand and draw advice", () => {
+          const trips = evaluateHoldemHand(parseCards("Ah Ad").cards, parseCards("As 7d 2c").cards);
+          const draw = evaluateHoldemHand(parseCards("As Ks").cards, parseCards("Qs Js 2d").cards);
+          return trips.madeHand.rank === "trips"
+            && trips.madeHand.label.includes("三条")
+            && draw.draws.some((item) => item.type === "flush-draw" && item.outs === 9)
+            && draw.draws.some((item) => item.type === "gutshot")
+            && draw.recommendation.includes("听牌");
+        }],
+        ["review page renders a hand strength evaluator panel", () => {
+          const app = document.createElement("div");
+          renderReview({ app, state: normalizeState({}), setState: () => {} });
+          const text = app.textContent;
+          return text.includes("手牌判断器")
+            && text.includes("当前牌力")
+            && text.includes("听牌 / outs")
+            && app.querySelector("[data-hand-evaluator]");
+        }],
+        ["training center renders situation details and learning links", () => {
+          const app = document.createElement("div");
+          renderTraining({
+            app,
+            state: normalizeState({}),
+            setState: () => {},
+            data: { drills },
+            trainingTargetQuestionId: "pf-003"
+          });
+          const text = app.textContent;
+          return text.includes("牌桌情境")
+            && text.includes("行动线")
+            && text.includes("学习链接")
+            && app.querySelectorAll("[data-drill-link]").length > 0;
+        }],
+        ["preflop response guide recommends actions versus opens", () => {
+          const response = choosePreflopResponse("6-max", "CO", "BTN", "AQs");
+          return preflopResponseSpots.length >= 4
+            && response.action === "3-bet"
+            && response.reason.includes("位置")
+            && response.confidence === "standard";
+        }],
+        ["range page renders facing-open response controls", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          const text = app.textContent;
+          return text.includes("面对开池决策")
+            && text.includes("我在 BTN")
+            && text.includes("对手 CO 开池")
+            && app.querySelector("[data-preflop-response-hand]")
+            && app.querySelector("[data-preflop-response-action]");
         }],
         ["dashboard recommendation identifies the dominant unresolved mistake type", () => {
           const app = document.createElement("div");

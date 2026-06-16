@@ -92,6 +92,58 @@ function getSessionSummary(attempts, drills) {
   `;
 }
 
+function renderSituation(question) {
+  const situation = question.situation || {};
+  const rows = [
+    ["桌型", situation.tableSize],
+    ["有效筹码", situation.stack],
+    ["Hero", situation.hero],
+    ["对手", situation.villain],
+    ["公共牌", situation.board],
+    ["底池", situation.pot],
+    ["面对下注", situation.facing]
+  ].filter(([, value]) => value);
+
+  return `
+    <div class="situation-card">
+      <div>
+        <p class="eyebrow">牌桌情境</p>
+        <h3>${escapeHtml(situation.title || question.level)}</h3>
+      </div>
+      ${rows.length ? `
+        <div class="situation-grid">
+          ${rows.map(([label, value]) => `
+            <div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>
+          `).join("")}
+        </div>
+      ` : ""}
+      <div class="compact-item">
+        <span>行动线</span>
+        <strong>${escapeHtml(situation.actionLine || question.prompt)}</strong>
+      </div>
+    </div>
+  `;
+}
+
+function renderLearningLinks(question) {
+  const links = question.learningLinks || question.tags.map((tag) => ({
+    label: tag,
+    note: "答题后回到对应章节或术语巩固这个概念。"
+  }));
+
+  return `
+    <div class="learning-link-panel">
+      <p class="eyebrow">学习链接</p>
+      <div class="tag-row">
+        ${links.slice(0, 5).map((link) => `
+          <span class="tag is-soft" data-drill-link="${escapeHtml(link.label)}">${escapeHtml(link.label)}</span>
+        `).join("")}
+      </div>
+      <p class="muted">${escapeHtml(links[0]?.note || "把这道题当成复盘索引，而不是孤立选择题。")}</p>
+    </div>
+  `;
+}
+
 export function renderTraining({ app, state, setState, data, trainingTargetQuestionId }) {
   if (trainingTargetQuestionId && trainingTargetQuestionId !== consumedTargetQuestionId) {
     const target = data.drills.find((drill) => drill.id === trainingTargetQuestionId);
@@ -150,6 +202,7 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
           <span class="tag is-soft">${escapeHtml(drillTypes[question.type])}</span>
         </div>
         <h2>${escapeHtml(question.prompt)}</h2>
+        ${renderSituation(question)}
         <div class="choice-grid">
           ${question.options.map((option) => `
             <button class="choice-button ${lastAnswer?.selected === option ? "is-selected" : ""}" data-answer="${escapeHtml(option)}">
@@ -164,6 +217,7 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
             <span class="xp-hint">+${lastAnswer.correct ? 10 : 5} XP</span>
           </div>
         ` : ""}
+        ${renderLearningLinks(question)}
         <div class="button-row">
           <button class="primary-button" data-next-question>下一题</button>
         </div>
