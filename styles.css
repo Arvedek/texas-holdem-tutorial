@@ -1477,16 +1477,46 @@ textarea {
   }
 
   .sidebar {
-    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    min-width: 0;
+    padding: 12px 14px;
+  }
+
+  .brand {
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    font-size: 21px;
+  }
+
+  .brand span {
+    font-size: 12px;
   }
 
   .nav {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 12px;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: 3px;
+    scrollbar-width: thin;
   }
 
   .nav-button {
-    min-width: 88px;
+    flex: 0 0 auto;
+    width: auto;
+    min-width: max-content;
+    padding: 9px 12px;
     text-align: center;
     white-space: nowrap;
   }
@@ -1546,13 +1576,226 @@ textarea {
     min-height: auto;
   }
 
-  .range-matrix {
+  .panel,
+  .form-panel {
+    padding: 18px;
+  }
+
+  .card,
+  .metric {
+    padding: 15px;
+  }
+
+  .button-row,
+  .section-heading {
+    gap: 8px;
+  }
+
+  .range-table-switch,
+  .range-position-switch,
+  .bb-scenario-buttons {
+    display: flex;
+    gap: 8px;
+    width: 100%;
     max-width: 100%;
-    gap: 2px;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-bottom: 3px;
+    scrollbar-width: thin;
+  }
+
+  .range-table-switch .chip-button,
+  .range-position-switch .chip-button,
+  .bb-scenario-buttons .chip-button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 9px 11px;
+    white-space: nowrap;
+  }
+
+  .range-matrix-panel {
+    gap: 13px;
+    min-width: 0;
+  }
+
+  .range-matrix-top {
+    gap: 12px;
+  }
+
+  .range-matrix-top > *,
+  .range-matrix-layout > *,
+  .section-intro > * {
+    min-width: 0;
+  }
+
+  .range-matrix-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+
+  .bb-scenario-switch {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .range-stats {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .range-stats-head {
+    align-items: center;
+  }
+
+  .range-stats-head > strong {
+    font-size: 23px;
+  }
+
+  .range-stat-grid {
+    gap: 6px;
+  }
+
+  .range-stat {
+    min-height: 58px;
+    padding: 8px 6px;
+  }
+
+  .range-stat span {
+    font-size: 11px;
+  }
+
+  .range-stat strong {
+    font-size: 20px;
+  }
+
+  .range-matrix-layout {
+    gap: 12px;
+  }
+
+  .range-matrix {
+    width: min(100%, calc(100vw - 32px));
+    max-width: none;
+    gap: 1px;
   }
 
   .hand-cell {
-    border-radius: 4px;
+    padding: 0;
+    border-radius: 3px;
+    font-size: clamp(8px, 2.4vw, 10px);
+  }
+
+  .hand-cell:hover,
+  .hand-cell.is-selected {
+    transform: none;
+    box-shadow: 0 0 0 2px rgba(28, 37, 31, 0.16);
+  }
+
+  .range-side-panel,
+  .range-hand-detail,
+  .range-shorthand-guide {
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .range-chip-row {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  body {
+    background: #f5f3ea;
+  }
+
+  .sidebar {
+    padding: 10px 10px 9px;
+  }
+
+  .brand strong {
+    font-size: 15px;
+  }
+
+  .main-panel {
+    padding: 16px 10px 24px;
+  }
+
+  .topbar {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 25px;
+  }
+
+  .content {
+    gap: 12px;
+  }
+
+  .panel,
+  .form-panel {
+    padding: 12px;
+  }
+
+  .card,
+  .metric,
+  .compact-item,
+  .lesson-card {
+    padding: 12px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+
+  .ghost-button,
+  .primary-button,
+  .chip-button {
+    padding: 9px 10px;
+  }
+
+  .range-matrix-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .range-stats-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .range-stats-head h4 {
+    font-size: 15px;
+  }
+
+  .range-stats-head p,
+  .range-stats p {
+    font-size: 12px;
+  }
+
+  .range-stat {
+    min-height: 54px;
+    padding: 7px 4px;
+  }
+
+  .range-stat span {
     font-size: 10px;
+  }
+
+  .range-stat strong {
+    font-size: 18px;
+  }
+
+  .range-matrix {
+    width: min(100%, calc(100vw - 20px));
+  }
+
+  .hand-cell {
+    font-size: 8px;
   }
 }
