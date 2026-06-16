@@ -23,6 +23,7 @@
       import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
       import { evaluateHoldemHand } from "./src/lib/handEvaluator.js?v=coach-20260616";
       import { generateStarterPlan } from "./src/lib/diagnosticPlan.js?v=diagnostic-20260616";
+      import { analyzeMistakeLeaks } from "./src/lib/leakAnalyzer.js?v=leaks-20260617";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js?v=coach-links-20260616";
@@ -34,6 +35,7 @@
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
       import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
+      import { renderMistakes } from "./src/features/mistakes.js?v=leaks-20260617";
       import { renderReview } from "./src/features/review.js?v=coach-20260616";
 
       const tests = [
@@ -621,6 +623,45 @@
           return text.includes("你的第一周计划")
             && text.includes("赔率")
             && app.querySelectorAll("[data-diagnostic-day]").length === 7;
+        }],
+        ["leak analyzer groups unresolved mistakes into coaching leaks", () => {
+          const leaks = analyzeMistakeLeaks(normalizeState({
+            savedMistakes: [
+              { questionId: "pf-001", status: "unresolved", wrongAnswers: ["跟注"] },
+              { questionId: "pf-009", status: "unresolved", wrongAnswers: ["冷跟"] },
+              { questionId: "od-006", status: "unresolved", wrongAnswers: ["轻松跟注"] }
+            ]
+          }), drills);
+          return leaks.length >= 2
+            && leaks[0].count >= 1
+            && leaks.some((leak) => leak.id === "preflop-discipline" && leak.correctiveDrills.length > 0)
+            && leaks.some((leak) => leak.id === "price-discipline");
+        }],
+        ["mistake book renders a leak library with corrective practice", () => {
+          const app = document.createElement("div");
+          let targetQuestion = "";
+          renderMistakes({
+            app,
+            state: normalizeState({
+              savedMistakes: [
+                { questionId: "pf-001", status: "unresolved", wrongAnswers: ["跟注"] },
+                { questionId: "pf-009", status: "unresolved", wrongAnswers: ["冷跟"] },
+                { questionId: "od-006", status: "unresolved", wrongAnswers: ["轻松跟注"] }
+              ]
+            }),
+            setState: () => {},
+            data: { drills },
+            openTrainingQuestion: (questionId) => {
+              targetQuestion = questionId;
+            }
+          });
+          const firstButton = app.querySelector("[data-leak-practice]");
+          firstButton.click();
+          const text = app.textContent;
+          return text.includes("漏洞库")
+            && text.includes("纠正训练")
+            && app.querySelectorAll("[data-leak-card]").length >= 2
+            && targetQuestion.length > 0;
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

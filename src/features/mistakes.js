@@ -1,5 +1,6 @@
 import { drillTypes } from "../data/drills.js";
 import { BADGES, awardBadge, awardXp } from "../lib/rewards.js";
+import { analyzeMistakeLeaks } from "../lib/leakAnalyzer.js";
 import { escapeHtml, escapeAttribute } from "../lib/sanitize.js";
 
 let filters = {
@@ -23,8 +24,63 @@ function getMistakeRows(state, drills) {
     .filter((row) => row.question);
 }
 
+function renderLeakLibrary(leaks) {
+  if (!leaks.length) {
+    return `
+      <section class="panel leak-library">
+        <div>
+          <p class="eyebrow">Leak Library</p>
+          <h2>漏洞库</h2>
+          <p class="muted">当前没有足够未掌握错题形成稳定漏洞。继续训练或保存复盘后，这里会自动归类重复问题。</p>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="panel leak-library">
+      <div>
+        <p class="eyebrow">Leak Library</p>
+        <h2>漏洞库</h2>
+        <p class="muted">这里把错题聚类成可训练的漏洞。先修重复模式，比逐题硬背更像真正复盘。</p>
+      </div>
+      <div class="leak-grid">
+        ${leaks.map((leak) => `
+          <article class="leak-card" data-leak-card="${escapeAttribute(leak.id)}">
+            <div class="section-heading">
+              <div>
+                <span class="tag">${leak.count} 个相关错题</span>
+                <h3>${escapeHtml(leak.title)}</h3>
+              </div>
+            </div>
+            <p>${escapeHtml(leak.why)}</p>
+            <div class="mistake-detail">
+              <strong>纠正习惯</strong>
+              <p>${escapeHtml(leak.habit)}</p>
+            </div>
+            <div class="compact-list">
+              ${leak.examples.map((question) => `
+                <div class="compact-item">
+                  <strong>${escapeHtml(question.prompt)}</strong>
+                  <span>${escapeHtml(drillTypes[question.type] || question.type)}</span>
+                </div>
+              `).join("")}
+            </div>
+            <div class="button-row">
+              ${leak.correctiveDrills.map((drill) => `
+                <button class="ghost-button" data-leak-practice="${escapeAttribute(drill.id)}">纠正训练：${escapeHtml(drillTypes[drill.type] || drill.type)}</button>
+              `).join("")}
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 export function renderMistakes({ app, state, setState, data, openTrainingQuestion }) {
   const rows = getMistakeRows(state, data.drills);
+  const leaks = analyzeMistakeLeaks(state, data.drills);
   const unresolvedCount = rows.filter((row) => row.mistake.status !== "mastered").length;
   const masteredCount = rows.filter((row) => row.mistake.status === "mastered").length;
   const filtered = rows.filter(({ mistake, question }) => {
@@ -64,6 +120,8 @@ export function renderMistakes({ app, state, setState, data, openTrainingQuestio
         </label>
       </div>
     </section>
+
+    ${renderLeakLibrary(leaks)}
 
     <section class="mistake-grid">
       ${filtered.length ? filtered.map(({ mistake, question }) => `
@@ -118,6 +176,10 @@ export function renderMistakes({ app, state, setState, data, openTrainingQuestio
 
   app.querySelectorAll("[data-practice-question]").forEach((button) => {
     button.addEventListener("click", () => openTrainingQuestion(button.dataset.practiceQuestion));
+  });
+
+  app.querySelectorAll("[data-leak-practice]").forEach((button) => {
+    button.addEventListener("click", () => openTrainingQuestion(button.dataset.leakPractice));
   });
 
   app.querySelectorAll("[data-master-mistake], [data-restore-mistake]").forEach((button) => {

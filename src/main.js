@@ -9,7 +9,7 @@ import { escapeHtml } from "./lib/sanitize.js";
 import { renderDashboard } from "./features/dashboard.js?v=diagnostic-20260616";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js?v=coach-links-20260616";
-import { renderMistakes } from "./features/mistakes.js";
+import { renderMistakes } from "./features/mistakes.js?v=leaks-20260617";
 import { renderReview } from "./features/review.js?v=coach-20260616";
 import { renderResources } from "./features/resources.js";
 import { renderGlossary, setGlossarySearch } from "./features/glossary.js";
