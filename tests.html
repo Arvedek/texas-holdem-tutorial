@@ -21,18 +21,19 @@
       import { normalizeState } from "./src/lib/storage.js";
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
-      import { evaluateHoldemHand } from "./src/lib/handEvaluator.js";
+      import { evaluateHoldemHand } from "./src/lib/handEvaluator.js?v=coach-20260616";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
-      import { drills } from "./src/data/drills.js";
+      import { drills } from "./src/data/drills.js?v=coach-20260616";
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
-      import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js";
+      import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js?v=coach-20260616";
       import { renderLearning } from "./src/features/learning.js";
       import { renderDashboard } from "./src/features/dashboard.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
-      import { renderRanges } from "./src/features/ranges.js";
-      import { renderReview } from "./src/features/review.js";
+      import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
+      import { renderTraining } from "./src/features/training.js?v=coach-20260616";
+      import { renderReview } from "./src/features/review.js?v=coach-20260616";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
