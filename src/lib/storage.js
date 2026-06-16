@@ -9,7 +9,8 @@ export const DEFAULT_STATE = {
   xp: 0,
   xpEvents: [],
   badges: [],
-  dailyActivity: {}
+  dailyActivity: {},
+  diagnosticProfile: null
 };
 
 function cloneDefaultState() {
@@ -92,7 +93,14 @@ export function normalizeState(parsed) {
     xp: Number.isFinite(Number(source.xp)) ? Number(source.xp) : fallback.xp,
     xpEvents: Array.isArray(source.xpEvents) ? source.xpEvents : fallback.xpEvents,
     badges: Array.isArray(source.badges) ? [...new Set(source.badges)] : fallback.badges,
-    dailyActivity: source.dailyActivity && typeof source.dailyActivity === "object" ? source.dailyActivity : fallback.dailyActivity
+    dailyActivity: source.dailyActivity && typeof source.dailyActivity === "object" ? source.dailyActivity : fallback.dailyActivity,
+    diagnosticProfile: source.diagnosticProfile && typeof source.diagnosticProfile === "object"
+      ? {
+          experience: typeof source.diagnosticProfile.experience === "string" ? source.diagnosticProfile.experience : "new",
+          tableSize: typeof source.diagnosticProfile.tableSize === "string" ? source.diagnosticProfile.tableSize : "6-max",
+          focus: typeof source.diagnosticProfile.focus === "string" ? source.diagnosticProfile.focus : "preflop"
+        }
+      : null
   };
 }
 

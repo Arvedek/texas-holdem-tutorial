@@ -6,7 +6,7 @@ import { preflopRanges } from "./data/preflopRanges.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
 import { createExportEnvelope, createImportPreview, downloadJson, validateImportEnvelope } from "./lib/importExport.js";
 import { escapeHtml } from "./lib/sanitize.js";
-import { renderDashboard } from "./features/dashboard.js";
+import { renderDashboard } from "./features/dashboard.js?v=diagnostic-20260616";
 import { renderLearning } from "./features/learning.js";
 import { renderTraining } from "./features/training.js?v=coach-links-20260616";
 import { renderMistakes } from "./features/mistakes.js";

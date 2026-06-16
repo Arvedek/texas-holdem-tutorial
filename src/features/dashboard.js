@@ -1,5 +1,6 @@
 import { BADGES, calculateMastery, calculateStreak, getDailyTasks, getLevel } from "../lib/rewards.js";
 import { escapeHtml } from "../lib/sanitize.js";
+import { diagnosticOptions, generateStarterPlan } from "../lib/diagnosticPlan.js";
 import { drillTypes } from "../data/drills.js";
 
 const TYPE_LESSON_IDS = {
@@ -191,6 +192,67 @@ function renderMasteryBars(mastery) {
   `).join("");
 }
 
+function option(value, label, selectedValue) {
+  return `<option value="${escapeHtml(value)}" ${value === selectedValue ? "selected" : ""}>${escapeHtml(label)}</option>`;
+}
+
+function renderDiagnostic(profile, lessons, drills) {
+  if (!profile) {
+    return `
+      <section class="panel diagnostic-panel">
+        <div>
+          <p class="eyebrow">3 分钟诊断</p>
+          <h2>先生成你的第一周学习计划</h2>
+          <p class="muted">回答三个问题，系统会把教材、范围、训练和复盘排成一条更适合你的路线。</p>
+        </div>
+        <div class="diagnostic-form">
+          <label>经验
+            <select data-diagnostic-field="experience">
+              ${diagnosticOptions.experience.map((item) => option(item.value, item.label, "new")).join("")}
+            </select>
+          </label>
+          <label>常打桌型
+            <select data-diagnostic-field="tableSize">
+              ${diagnosticOptions.tableSize.map((tableSize) => option(tableSize, tableSize, "6-max")).join("")}
+            </select>
+          </label>
+          <label>最想补
+            <select data-diagnostic-field="focus">
+              ${diagnosticOptions.focus.map((item) => option(item.value, item.label, "preflop")).join("")}
+            </select>
+          </label>
+        </div>
+        <div class="button-row">
+          <button class="primary-button" type="button" data-save-diagnostic>生成计划</button>
+        </div>
+      </section>
+    `;
+  }
+
+  const plan = generateStarterPlan(profile, lessons, drills);
+  return `
+    <section class="panel diagnostic-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Personal Plan</p>
+          <h2>你的第一周计划：${escapeHtml(plan.title)}</h2>
+          <p class="muted">${escapeHtml(plan.summary)}</p>
+        </div>
+        <button class="ghost-button" type="button" data-reset-diagnostic>重新诊断</button>
+      </div>
+      <div class="diagnostic-days">
+        ${plan.days.map((day) => `
+          <button class="diagnostic-day" type="button" data-diagnostic-day="${day.day}" data-diagnostic-route="${escapeHtml(day.route)}">
+            <span>Day ${day.day}</span>
+            <strong>${escapeHtml(day.title)}</strong>
+            <small>${escapeHtml(day.cta)}</small>
+          </button>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 export function renderDashboard({ app, state, setState, data, navigate }) {
   const { lessons, drills } = data;
   const completed = new Set(state.completedLessons);
@@ -223,6 +285,8 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
 
   app.innerHTML = `
     <div class="dashboard-grid">
+      ${renderDiagnostic(state.diagnosticProfile, lessons, drills)}
+
       <section class="panel hero-panel">
         <div>
           <p class="eyebrow">下一步</p>
@@ -403,6 +467,31 @@ export function renderDashboard({ app, state, setState, data, navigate }) {
     button.addEventListener("click", () => {
       const route = button.dataset.action.replace("go-", "");
       navigate(route);
+    });
+  });
+
+  app.querySelector("[data-save-diagnostic]")?.addEventListener("click", () => {
+    const profile = {
+      experience: app.querySelector('[data-diagnostic-field="experience"]').value,
+      tableSize: app.querySelector('[data-diagnostic-field="tableSize"]').value,
+      focus: app.querySelector('[data-diagnostic-field="focus"]').value
+    };
+    setState((current) => ({
+      ...current,
+      diagnosticProfile: profile
+    }));
+  });
+
+  app.querySelector("[data-reset-diagnostic]")?.addEventListener("click", () => {
+    setState((current) => ({
+      ...current,
+      diagnosticProfile: null
+    }));
+  });
+
+  app.querySelectorAll("[data-diagnostic-route]").forEach((button) => {
+    button.addEventListener("click", () => {
+      navigate(button.dataset.diagnosticRoute);
     });
   });
 

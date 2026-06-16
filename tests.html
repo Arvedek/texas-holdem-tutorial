@@ -22,6 +22,7 @@
       import { createExportEnvelope, validateImportEnvelope } from "./src/lib/importExport.js";
       import { awardBadge, awardXp, calculateMastery, calculateStreak, getDailyTasks, getLevel, markDailyActivity, maybeAwardDailyBonus } from "./src/lib/rewards.js";
       import { evaluateHoldemHand } from "./src/lib/handEvaluator.js?v=coach-20260616";
+      import { generateStarterPlan } from "./src/lib/diagnosticPlan.js?v=diagnostic-20260616";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js?v=coach-links-20260616";
@@ -29,7 +30,7 @@
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js?v=coach-20260616";
       import { renderLearning } from "./src/features/learning.js";
-      import { renderDashboard } from "./src/features/dashboard.js";
+      import { renderDashboard } from "./src/features/dashboard.js?v=diagnostic-20260616";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
       import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
@@ -559,6 +560,67 @@
           return text.includes("赔率与 outs")
             && text.includes("薄弱训练")
             && app.querySelector('[data-action="go-training"]');
+        }],
+        ["diagnostic plan personalizes a first-week route", () => {
+          const plan = generateStarterPlan({ experience: "new", tableSize: "9-max", focus: "preflop" }, lessons, drills);
+          return plan.days.length === 7
+            && plan.title.includes("翻前")
+            && plan.summary.includes("9-max")
+            && plan.days.some((day) => day.route === "ranges")
+            && plan.days.some((day) => day.drillType === "preflop");
+        }],
+        ["state preserves diagnostic profile defaults", () => {
+          const state = normalizeState({
+            diagnosticProfile: {
+              experience: "home-game",
+              tableSize: "8-max",
+              focus: "postflop"
+            }
+          });
+          const empty = normalizeState({});
+          return state.diagnosticProfile.tableSize === "8-max"
+            && state.diagnosticProfile.focus === "postflop"
+            && empty.diagnosticProfile === null;
+        }],
+        ["dashboard can save a beginner diagnostic profile", () => {
+          const app = document.createElement("div");
+          let nextState = null;
+          renderDashboard({
+            app,
+            state: normalizeState({}),
+            setState: (updater) => {
+              nextState = updater(normalizeState({}));
+            },
+            data: { lessons, drills },
+            navigate: () => {}
+          });
+          app.querySelector('[data-diagnostic-field="experience"]').value = "new";
+          app.querySelector('[data-diagnostic-field="tableSize"]').value = "9-max";
+          app.querySelector('[data-diagnostic-field="focus"]').value = "preflop";
+          app.querySelector("[data-save-diagnostic]").click();
+          return app.textContent.includes("3 分钟诊断")
+            && nextState?.diagnosticProfile?.tableSize === "9-max"
+            && nextState?.diagnosticProfile?.focus === "preflop";
+        }],
+        ["dashboard renders personalized first-week plan", () => {
+          const app = document.createElement("div");
+          renderDashboard({
+            app,
+            state: normalizeState({
+              diagnosticProfile: {
+                experience: "new",
+                tableSize: "6-max",
+                focus: "odds"
+              }
+            }),
+            setState: () => {},
+            data: { lessons, drills },
+            navigate: () => {}
+          });
+          const text = app.textContent;
+          return text.includes("你的第一周计划")
+            && text.includes("赔率")
+            && app.querySelectorAll("[data-diagnostic-day]").length === 7;
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

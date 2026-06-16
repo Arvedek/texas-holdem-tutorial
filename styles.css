@@ -236,6 +236,68 @@ h1 {
   gap: 18px;
 }
 
+.diagnostic-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.diagnostic-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.diagnostic-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.diagnostic-form select {
+  width: 100%;
+  padding: 11px 12px;
+  color: var(--ink);
+  border: 1px solid rgba(124, 115, 96, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.diagnostic-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.diagnostic-day {
+  min-height: 112px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: 12px;
+  text-align: left;
+  color: var(--ink);
+  border: 1px solid rgba(15, 90, 67, 0.17);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.diagnostic-day:hover {
+  border-color: rgba(15, 90, 67, 0.42);
+  background: #fff;
+}
+
+.diagnostic-day span,
+.diagnostic-day small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagnostic-day strong {
+  line-height: 1.35;
+}
+
 .hero-panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 170px;
@@ -1618,6 +1680,8 @@ textarea {
   .grid.three,
   .retention-grid,
   .daily-task-grid,
+  .diagnostic-form,
+  .diagnostic-days,
   .hero-panel,
   .quick-actions,
   .range-matrix-top,
