@@ -1,5 +1,5 @@
 import { lessons } from "./data/lessons.js";
-import { drills } from "./data/drills.js?v=coach-20260616";
+import { drills } from "./data/drills.js?v=coach-links-20260616";
 import { resources } from "./data/resources.js";
 import { glossaryTerms } from "./data/glossary.js";
 import { preflopRanges } from "./data/preflopRanges.js";
@@ -8,7 +8,7 @@ import { createExportEnvelope, createImportPreview, downloadJson, validateImport
 import { escapeHtml } from "./lib/sanitize.js";
 import { renderDashboard } from "./features/dashboard.js";
 import { renderLearning } from "./features/learning.js";
-import { renderTraining } from "./features/training.js?v=coach-20260616";
+import { renderTraining } from "./features/training.js?v=coach-links-20260616";
 import { renderMistakes } from "./features/mistakes.js";
 import { renderReview } from "./features/review.js?v=coach-20260616";
 import { renderResources } from "./features/resources.js";

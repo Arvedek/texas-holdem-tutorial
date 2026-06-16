@@ -24,7 +24,7 @@
       import { evaluateHoldemHand } from "./src/lib/handEvaluator.js?v=coach-20260616";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
-      import { drills } from "./src/data/drills.js?v=coach-20260616";
+      import { drills } from "./src/data/drills.js?v=coach-links-20260616";
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js?v=coach-20260616";
@@ -32,7 +32,7 @@
       import { renderDashboard } from "./src/features/dashboard.js";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
       import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
-      import { renderTraining } from "./src/features/training.js?v=coach-20260616";
+      import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
       import { renderReview } from "./src/features/review.js?v=coach-20260616";
 
       const tests = [
@@ -474,6 +474,31 @@
             && text.includes("行动线")
             && text.includes("学习链接")
             && app.querySelectorAll("[data-drill-link]").length > 0;
+        }],
+        ["training learning links open glossary search", () => {
+          const app = document.createElement("div");
+          let query = "";
+          renderTraining({
+            app,
+            state: normalizeState({}),
+            setState: () => {},
+            data: { drills },
+            trainingTargetQuestionId: "pf-003",
+            openGlossarySearch: (value) => {
+              query = value;
+            }
+          });
+          const link = app.querySelector("[data-drill-link]");
+          link.click();
+          return link.tagName === "BUTTON" && query.length > 0;
+        }],
+        ["drill bank includes broad situation-training coverage", () => {
+          const situationDrills = drills.filter((drill) => drill.situation);
+          const coveredTypes = new Set(situationDrills.map((drill) => drill.type));
+          return situationDrills.length >= 10
+            && coveredTypes.has("preflop")
+            && coveredTypes.has("odds")
+            && coveredTypes.has("decision");
         }],
         ["preflop response guide recommends actions versus opens", () => {
           const response = choosePreflopResponse("6-max", "CO", "BTN", "AQs");

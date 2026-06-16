@@ -136,7 +136,7 @@ function renderLearningLinks(question) {
       <p class="eyebrow">学习链接</p>
       <div class="tag-row">
         ${links.slice(0, 5).map((link) => `
-          <span class="tag is-soft" data-drill-link="${escapeHtml(link.label)}">${escapeHtml(link.label)}</span>
+          <button class="tag is-soft tag-button" type="button" data-drill-link="${escapeHtml(link.label)}">${escapeHtml(link.label)}</button>
         `).join("")}
       </div>
       <p class="muted">${escapeHtml(links[0]?.note || "把这道题当成复盘索引，而不是孤立选择题。")}</p>
@@ -144,7 +144,7 @@ function renderLearningLinks(question) {
   `;
 }
 
-export function renderTraining({ app, state, setState, data, trainingTargetQuestionId }) {
+export function renderTraining({ app, state, setState, data, trainingTargetQuestionId, openGlossarySearch }) {
   if (trainingTargetQuestionId && trainingTargetQuestionId !== consumedTargetQuestionId) {
     const target = data.drills.find((drill) => drill.id === trainingTargetQuestionId);
     if (target) {
@@ -229,7 +229,15 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
     button.addEventListener("click", () => {
       selectedType = button.dataset.drillType;
       lastAnswer = null;
-      renderTraining({ app, state, setState, data });
+      renderTraining({ app, state, setState, data, openGlossarySearch });
+    });
+  });
+
+  app.querySelectorAll("[data-drill-link]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (openGlossarySearch) {
+        openGlossarySearch(button.dataset.drillLink);
+      }
     });
   });
 
@@ -288,6 +296,6 @@ export function renderTraining({ app, state, setState, data, trainingTargetQuest
       [selectedType]: ((questionIndexByType[selectedType] || 0) + 1) % questions.length
     };
     lastAnswer = null;
-    renderTraining({ app, state, setState, data });
+    renderTraining({ app, state, setState, data, openGlossarySearch });
   });
 }

@@ -416,5 +416,145 @@ export const drills = [
       { label: "bluff-catch", note: "抓诈要看对手是否真的有足够诈唬。" },
       { label: "exploit", note: "对低诈唬玩家可以偏离理论多弃。" }
     ]
+  },
+  {
+    id: "st-005",
+    type: "preflop",
+    level: "入门",
+    prompt: "9-max，UTG open 2.5bb，你在 HJ 拿 ATo。新手默认？",
+    options: ["弃牌", "冷跟", "小 3-bet", "直接全下"],
+    answer: "弃牌",
+    explanation: "满员桌 UTG 范围很强，ATo 容易被 AQ、AK、AJ 和大对子压制，后面还有多人未行动。",
+    tags: ["preflop", "full-ring", "domination"],
+    situation: {
+      title: "面对早位强开池",
+      tableSize: "9-max",
+      stack: "100bb",
+      hero: "HJ · ATo",
+      villain: "UTG open 2.5bb",
+      actionLine: "UTG 第一行动开池，MP 弃牌，Hero 在 HJ 行动，后面仍有 CO/BTN/盲位。"
+    },
+    learningLinks: [
+      { label: "utg", note: "早位开池代表后面要过很多人，范围默认更强。" },
+      { label: "domination", note: "ATo 这类牌最怕被更强 Ax 压制。" }
+    ]
+  },
+  {
+    id: "st-006",
+    type: "preflop",
+    level: "初中级",
+    prompt: "BTN open，小盲弃牌，你在 BB 拿 72o。虽然有价格，默认？",
+    options: ["弃牌", "任何两张都防守", "必然 3-bet", "跟注看运气"],
+    answer: "弃牌",
+    explanation: "大盲有折扣不等于全防。72o 可实现权益太差，长期会在无位置损失更多。",
+    tags: ["preflop", "bb-defense", "equity-realization"],
+    situation: {
+      title: "大盲不是全蓝",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "BB · 72o",
+      villain: "BTN open 2.3bb",
+      actionLine: "BTN 偷盲开池，小盲弃牌，Hero 在大盲行动。"
+    },
+    learningLinks: [
+      { label: "bb", note: "大盲防守要看价格，也要看手牌能否兑现权益。" },
+      { label: "equity realization", note: "弱 offsuit 垃圾牌即使有折扣也很难打到摊牌。" }
+    ]
+  },
+  {
+    id: "st-007",
+    type: "odds",
+    level: "入门",
+    prompt: "翻牌你有开放式顺子听牌 8 outs，底池 60，对手下注 20。默认？",
+    options: ["多可跟注", "永远弃牌", "不算价格全下", "只看牌面颜色"],
+    answer: "多可跟注",
+    explanation: "8 outs 两张牌约 32%，面对 1/3 pot 价格较好，尤其有位置或隐含赔率时可以继续。",
+    tags: ["odds", "open-ended", "pot-odds"],
+    situation: {
+      title: "翻牌开放式顺听牌",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "9♠ 8♠",
+      board: "7♦ 6♣ 2♥",
+      pot: "60",
+      facing: "20",
+      actionLine: "翻牌你 check，对手下注 20 到 60 的底池。"
+    },
+    learningLinks: [
+      { label: "open-ended straight draw", note: "开放式顺子听牌通常约 8 outs。" },
+      { label: "pot odds", note: "先看跟注价格，再看隐含赔率。" }
+    ]
+  },
+  {
+    id: "st-008",
+    type: "decision",
+    level: "初中级",
+    prompt: "多人底池，翻牌 K72 彩虹，你在 CO 持 KJ，两个玩家都跟到翻牌。默认？",
+    options: ["小心价值下注", "自动三条街打光", "纯诈唬", "直接弃牌顶对"],
+    answer: "小心价值下注",
+    explanation: "多人底池顶对价值下降，但 KJ 仍能从较差 Kx、7x 和口袋对子拿薄价值；尺度要克制。",
+    tags: ["decision", "multiway", "thin-value"],
+    situation: {
+      title: "多人底池顶对降级",
+      tableSize: "8-max",
+      stack: "100bb",
+      hero: "CO · KJ",
+      villain: "BTN 与 BB 跟注",
+      board: "K72 rainbow",
+      pot: "9bb",
+      actionLine: "CO open，BTN call，BB call；翻牌 BB check，Hero 行动。"
+    },
+    learningLinks: [
+      { label: "multiway pot", note: "多人底池价值阈值提高，诈唬频率降低。" },
+      { label: "thin value", note: "薄价值要想清楚哪些更差牌会跟。" }
+    ]
+  },
+  {
+    id: "st-009",
+    type: "decision",
+    level: "初中级",
+    prompt: "河牌你拿顶两对，前面下注两街被跟，河牌完成明显同花。对手 check。默认？",
+    options: ["多 check back", "必然超池价值", "任意牌都诈唬", "弃牌不用摊牌"],
+    answer: "多 check back",
+    explanation: "危险河牌会让更差两对和顶对少跟，反而被同花 check-raise。摊牌价值足够时可以控制。",
+    tags: ["decision", "river", "showdown-value"],
+    situation: {
+      title: "危险河牌的摊牌价值",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "BTN · 顶两对",
+      villain: "BB check",
+      board: "A T 6 3 2 三同花",
+      pot: "60bb",
+      actionLine: "你翻牌、转牌下注被跟，河牌第三张同花落下，对手 check。"
+    },
+    learningLinks: [
+      { label: "showdown value", note: "有摊牌价值不代表必须下注。" },
+      { label: "river discipline", note: "河牌价值下注要确认更差牌会跟。" }
+    ]
+  },
+  {
+    id: "st-010",
+    type: "decision",
+    level: "进阶",
+    prompt: "你 3-bet 后，翻牌低牌面 864 两同花，OOP 持 AKo 无后门。默认？",
+    options: ["降低 c-bet 频率", "自动大注", "永远全下", "不看牌面继续下注"],
+    answer: "降低 c-bet 频率",
+    explanation: "低连湿润面更击中跟注方，AKo 无后门权益实现差，机械 c-bet 会被继续范围惩罚。",
+    tags: ["decision", "3bet-pot", "board-texture"],
+    situation: {
+      title: "3-bet 底池低湿牌面",
+      tableSize: "6-max",
+      stack: "100bb",
+      hero: "SB · AKo",
+      villain: "BTN call 3-bet",
+      board: "8♠ 6♠ 4♦",
+      pot: "22bb",
+      actionLine: "BTN open，SB 3-bet，BTN call；翻牌 Hero OOP 行动。"
+    },
+    learningLinks: [
+      { label: "board texture", note: "低连湿润面会改变翻前加注者优势。" },
+      { label: "3-bet pot", note: "3-bet 底池也不能机械持续下注。" }
+    ]
   }
 ];
