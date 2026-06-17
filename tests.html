@@ -28,6 +28,8 @@
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js?v=coach-links-20260616";
+      import { resources } from "./src/data/resources.js";
+      import { quickReferenceCards } from "./src/data/quickReference.js?v=quick-ref-20260617";
       import { glossaryTerms } from "./src/data/glossary.js";
       import { preflopRanges } from "./src/data/preflopRanges.js";
       import { choosePreflopResponse, preflopResponseSpots } from "./src/data/preflopResponses.js?v=coach-20260616";
@@ -38,6 +40,7 @@
       import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
       import { renderMistakes } from "./src/features/mistakes.js?v=leaks-20260617";
       import { renderReview } from "./src/features/review.js?v=coach-20260616";
+      import { renderResources } from "./src/features/resources.js?v=quick-ref-20260617";
 
       const tests = [
         ["parseCard('As') succeeds", () => parseCard("As").ok],
@@ -712,6 +715,26 @@
             && text.includes("正反馈")
             && app.querySelectorAll("[data-coach-task]").length >= 3
             && routes.includes("mistakes");
+        }],
+        ["quick reference covers the beginner table essentials", () => {
+          const ids = new Set(quickReferenceCards.map((card) => card.id));
+          return quickReferenceCards.length >= 6
+            && ["hand-rankings", "positions", "range-notation", "pot-odds", "postflop-decision", "danger-lines"].every((id) => ids.has(id))
+            && quickReferenceCards.every((card) => card.title
+              && card.whenToUse
+              && Array.isArray(card.items)
+              && card.items.length >= 4
+              && card.items.every((item) => item.label && item.detail));
+        }],
+        ["resource library renders quick reference cards for new players", () => {
+          const app = document.createElement("div");
+          renderResources({ app, data: { resources, quickReferenceCards } });
+          const text = app.textContent;
+          return text.includes("新手速查手册")
+            && text.includes("牌型强弱")
+            && text.includes("范围写法")
+            && text.includes("赔率速算")
+            && app.querySelectorAll("[data-quick-reference-card]").length >= 6;
         }],
         ["streak counts consecutive active days", () => {
           const state = normalizeState({});

@@ -1,6 +1,7 @@
 import { lessons } from "./data/lessons.js";
 import { drills } from "./data/drills.js?v=coach-links-20260616";
 import { resources } from "./data/resources.js";
+import { quickReferenceCards } from "./data/quickReference.js";
 import { glossaryTerms } from "./data/glossary.js";
 import { preflopRanges } from "./data/preflopRanges.js";
 import { loadState, resetState, saveState } from "./lib/storage.js";
@@ -75,6 +76,7 @@ function getContext() {
       lessons,
       drills,
       resources,
+      quickReferenceCards,
       glossaryTerms,
       preflopRanges
     },

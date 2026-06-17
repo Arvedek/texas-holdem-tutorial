@@ -1,3 +1,5 @@
+import { escapeHtml } from "../lib/sanitize.js";
+
 let filters = {
   type: "全部",
   level: "全部",
@@ -10,11 +12,45 @@ function unique(values) {
 
 function selectHtml(name, label, options, value) {
   return `
-    <label>${label}
+    <label>${escapeHtml(label)}
       <select name="${name}" data-resource-filter>
-        ${options.map((option) => `<option value="${option}" ${option === value ? "selected" : ""}>${option}</option>`).join("")}
+        ${options.map((option) => `<option value="${escapeHtml(option)}" ${option === value ? "selected" : ""}>${escapeHtml(option)}</option>`).join("")}
       </select>
     </label>
+  `;
+}
+
+function renderQuickReference(cards = []) {
+  if (!cards.length) {
+    return "";
+  }
+
+  return `
+    <section class="panel quick-reference-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Quick Reference</p>
+          <h2>新手速查手册</h2>
+          <p class="muted">打牌、做题或复盘卡住时先看这里：只放最容易忘、最常用、最影响决策的牌桌基础。</p>
+        </div>
+      </div>
+      <div class="quick-reference-grid">
+        ${cards.map((card) => `
+          <article class="quick-reference-card" data-quick-reference-card="${escapeHtml(card.id)}">
+            <h3>${escapeHtml(card.title)}</h3>
+            <p>${escapeHtml(card.whenToUse)}</p>
+            <div class="quick-reference-list">
+              ${card.items.map((item) => `
+                <div>
+                  <strong>${escapeHtml(item.label)}</strong>
+                  <span>${escapeHtml(item.detail)}</span>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+        `).join("")}
+      </div>
+    </section>
   `;
 }
 
@@ -30,6 +66,8 @@ export function renderResources({ app, data }) {
   });
 
   app.innerHTML = `
+    ${renderQuickReference(data.quickReferenceCards)}
+
     <section class="panel section-intro">
       <div>
         <p class="eyebrow">Resource Library</p>
@@ -48,22 +86,22 @@ export function renderResources({ app, data }) {
         <article class="card resource-card">
           <div class="section-heading">
             <div>
-              <span class="tag">${resource.type}</span>
-              <span class="tag is-soft">${resource.level}</span>
+              <span class="tag">${escapeHtml(resource.type)}</span>
+              <span class="tag is-soft">${escapeHtml(resource.level)}</span>
             </div>
           </div>
-          <h3>${resource.name}</h3>
-          <p>${resource.description}</p>
+          <h3>${escapeHtml(resource.name)}</h3>
+          <p>${escapeHtml(resource.description)}</p>
           <div class="resource-note">
             <strong>为什么有用</strong>
-            <p>${resource.value}</p>
+            <p>${escapeHtml(resource.value)}</p>
           </div>
           <div class="resource-note">
             <strong>建议用法</strong>
-            <p>${resource.suggestedUse}</p>
+            <p>${escapeHtml(resource.suggestedUse)}</p>
           </div>
-          <div class="tag-row">${resource.tags.map((tag) => `<span class="tag is-soft">${tag}</span>`).join("")}</div>
-          <a class="external-link" href="${resource.url}" target="_blank" rel="noreferrer">打开资源</a>
+          <div class="tag-row">${resource.tags.map((tag) => `<span class="tag is-soft">${escapeHtml(tag)}</span>`).join("")}</div>
+          <a class="external-link" href="${escapeHtml(resource.url)}" target="_blank" rel="noreferrer">打开资源</a>
         </article>
       `).join("")}
       ${filtered.length ? "" : `<div class="panel"><p class="muted">没有匹配资源，试试放宽筛选。</p></div>`}
