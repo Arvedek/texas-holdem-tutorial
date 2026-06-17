@@ -14,7 +14,7 @@ import { renderMistakes } from "./features/mistakes.js?v=leaks-20260617";
 import { renderReview } from "./features/review.js?v=coach-20260616";
 import { renderResources } from "./features/resources.js";
 import { renderGlossary, setGlossarySearch } from "./features/glossary.js";
-import { renderRanges } from "./features/ranges.js?v=coach-20260616";
+import { renderRanges } from "./features/ranges.js?v=range-decoder-20260617";
 
 const app = document.querySelector("#app");
 const pageTitle = document.querySelector("#page-title");

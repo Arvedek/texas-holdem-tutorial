@@ -1,4 +1,5 @@
 import { escapeAttribute, escapeHtml } from "../lib/sanitize.js";
+import { decodeRangeNotation } from "../lib/rangeNotation.js";
 import { choosePreflopResponse, preflopResponseSpots } from "../data/preflopResponses.js";
 
 let selectedTableSize = "6-max";
@@ -7,6 +8,7 @@ let selectedHandBySpot = {};
 let selectedBbScenarioBySpot = {};
 let selectedResponseSpotId = "co-open-btn";
 let responseHand = "AQs";
+let rangeDecoderInput = "A7s+, 98s-65s, 22+";
 
 const RANKS = ["A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2"];
 const PREMIUM_HANDS = new Set(["AA", "KK", "QQ", "JJ", "TT", "AKs", "AKo", "AQs"]);
@@ -423,6 +425,38 @@ function renderPreflopResponseGuide() {
   `;
 }
 
+function renderRangeDecoder() {
+  const decoded = decodeRangeNotation(rangeDecoderInput);
+
+  return `
+    <section class="panel range-decoder-panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Notation Decoder</p>
+          <h2>范围写法解码器</h2>
+          <p class="muted">把 A7s+、98s-65s、22+ 这种写法展开成具体起手牌。先看懂范围，再谈记范围。</p>
+        </div>
+      </div>
+      <label class="range-decoder-input">输入范围写法
+        <input data-range-decoder-input value="${escapeAttribute(rangeDecoderInput)}" placeholder="A7s+, 98s-65s, 22+">
+      </label>
+      <div class="range-decoder-result">
+        <div class="range-chip-row">
+          ${decoded.hands.length
+            ? decoded.hands.map((hand) => `<span class="range-chip" data-decoded-hand="${escapeAttribute(hand)}">${escapeHtml(hand)}</span>`).join("")
+            : `<span class="range-chip">等待输入</span>`}
+        </div>
+        ${decoded.explanations.length ? `
+          <div class="compact-list">
+            ${decoded.explanations.map((line) => `<div class="compact-item"><span>${escapeHtml(line)}</span></div>`).join("")}
+          </div>
+        ` : ""}
+        ${decoded.unknownTokens.length ? `<p class="muted">未识别：${escapeHtml(decoded.unknownTokens.join("、"))}。目前支持具体手牌、+、-、对子、s/o。</p>` : ""}
+      </div>
+    </section>
+  `;
+}
+
 export function renderRanges({ app, data }) {
   const ranges = data.preflopRanges || [];
   const tableSizes = [...new Set(ranges.map((item) => item.tableSize))];
@@ -472,6 +506,8 @@ export function renderRanges({ app, data }) {
     </section>
 
     ${renderPreflopResponseGuide()}
+
+    ${renderRangeDecoder()}
 
     <section class="panel range-matrix-panel">
       <div class="range-matrix-top">
@@ -548,6 +584,11 @@ export function renderRanges({ app, data }) {
 
   app.querySelector("[data-preflop-response-hand]")?.addEventListener("input", (event) => {
     responseHand = event.target.value.trim();
+    renderRanges({ app, data });
+  });
+
+  app.querySelector("[data-range-decoder-input]")?.addEventListener("input", (event) => {
+    rangeDecoderInput = event.target.value.trim();
     renderRanges({ app, data });
   });
 

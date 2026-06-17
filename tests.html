@@ -25,6 +25,7 @@
       import { generateStarterPlan } from "./src/lib/diagnosticPlan.js?v=diagnostic-20260616";
       import { analyzeMistakeLeaks } from "./src/lib/leakAnalyzer.js?v=leaks-20260617";
       import { buildCoachQueue } from "./src/lib/coachAdvisor.js?v=coach-queue-20260617";
+      import { decodeRangeNotation } from "./src/lib/rangeNotation.js?v=range-decoder-20260617";
       import { searchContent } from "./src/lib/contentSearch.js";
       import { lessons } from "./src/data/lessons.js";
       import { drills } from "./src/data/drills.js?v=coach-links-20260616";
@@ -36,7 +37,7 @@
       import { renderLearning } from "./src/features/learning.js";
       import { renderDashboard } from "./src/features/dashboard.js?v=coach-queue-20260617";
       import { renderGlossary, setGlossarySearch } from "./src/features/glossary.js";
-      import { renderRanges } from "./src/features/ranges.js?v=coach-20260616";
+      import { renderRanges } from "./src/features/ranges.js?v=range-decoder-20260617";
       import { renderTraining } from "./src/features/training.js?v=coach-links-20260616";
       import { renderMistakes } from "./src/features/mistakes.js?v=leaks-20260617";
       import { renderReview } from "./src/features/review.js?v=coach-20260616";
@@ -390,6 +391,34 @@
             && text.includes("A7s+ 表示 A7s、A8s")
             && text.includes("A7s 在 4-max CO")
             && text.includes("默认可以开池");
+        }],
+        ["range notation decoder expands plus dash and pair shorthand", () => {
+          const decoded = decodeRangeNotation("A7s+, 98s-65s, 22+, AQo+");
+          const handSet = new Set(decoded.hands);
+          return decoded.ok
+            && handSet.has("A7s")
+            && handSet.has("AKs")
+            && handSet.has("98s")
+            && handSet.has("65s")
+            && handSet.has("22")
+            && handSet.has("AA")
+            && handSet.has("AQo")
+            && handSet.has("AKo")
+            && decoded.explanations.length >= 4;
+        }],
+        ["range page renders an interactive notation decoder", () => {
+          const app = document.createElement("div");
+          renderRanges({ app, data: { preflopRanges } });
+          const input = app.querySelector("[data-range-decoder-input]");
+          input.value = "A7s+, 98s-65s, 22+";
+          input.dispatchEvent(new Event("input"));
+          const text = app.textContent;
+          return text.includes("范围写法解码器")
+            && text.includes("A7s")
+            && text.includes("AKs")
+            && text.includes("98s")
+            && text.includes("65s")
+            && app.querySelectorAll("[data-decoded-hand]").length >= 10;
         }],
         ["big blind range matrix uses defense scenarios instead of all blue cells", () => {
           const app = document.createElement("div");

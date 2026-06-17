@@ -1354,6 +1354,36 @@ textarea {
   color: var(--ink);
 }
 
+.range-decoder-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.range-decoder-input {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.range-decoder-input input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(124, 115, 96, 0.28);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
+}
+
+.range-decoder-result {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(15, 90, 67, 0.13);
+  border-radius: 8px;
+  background: rgba(15, 90, 67, 0.06);
+}
+
 .range-matrix-panel {
   display: grid;
   gap: 16px;
